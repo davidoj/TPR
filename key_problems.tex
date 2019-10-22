@@ -1,0 +1,200 @@
+%!TEX root = main.tex
+
+\subsection{Key Problems in Causal Inference}
+
+\subsubsection{Causal Discovery}\label{sec:discovery}
+
+Our aim is to find principles for choosing consequence kernels (Definition \ref{def:depend_hypoth}). Recall the objection to the use of causal Bayesian networks: we have posited that $\mathcal{G}$ is a causal Bayesian network because it is compatible with $\mathbf{P}_*$ (Definition \ref{def:CBN}), but we have also suggested the elements of $\mathbf{P}_*$ should be computed via $\mathcal{G}$ and $P_V(\RV{V})$. We must either have some reason to believe $\mathbf{P}_*$ contains the correct consequence kernel that does not invoke $\mathcal{G}$, or we must have some reason to believe $\mathcal{G}$ and $P_V(\RV{V})$ generate the correct consequence kernel via Equation \ref{eq:trunc_fact} that does not invoke the compatibility of $\mathcal{G}$ with $\mathbf{P}_*$.
+
+One way out of the circularity is to suppose that the collection $\mathbf{P}_*$ can be determined by, for example, performing an ideal randomised controlled trial to determine the value of each $P_V(\RV{V}|do(V_i=v))$. This interpretation has led to controversy over whether such quantities are well-defined if it is not possible to perform such a trial, an interpretation that has been rejected by Pearl\cite{hernan_causal_2018,pearl_does_2018,cartwright_causation:_2004}. This solution is also subject to criticisms of randomised controlled trials: both in theory and practice, they are not always able to estimate the effects that we are actually interested in\cite{cartwright_what_2009,teira_causality_2013,heckman_randomization_1991}.
+
+An alternative approach is to rely on expert knowledge for causal structures. The examples of control systems and Markov Decision Problems (and no doubt many others) suggest that this strategy can be fruitful if applied carefully. On the other hand, it is somewhat unsatisfying to rely on causal intuition as a black box in this scenario. Where expert-derived causal models can be tested, they are at least sometimes found to be false \cite{spirtes_causation_1993} (pp97-107). 
+
+Finally, there is the \emph{causal discovery} approach, which aims to develop principles for determining the correct causal structure from data. These generally take the form of rules by which some structural hypotheses are considered unlikely or dispreferred to other hypotheses. This stands in contrast to the condition of compatibility (definition \ref{def:compatibility}) which is a hard requirement - a causal Bayesian network by definition \ref{def:CBN} must be compatible with the set $\mathbf{P}_*$ of interventional distributions.
+
+\subsubsubsection{Faithfulness and conditional independence based approaches}
+
+The most studied variant of causal discovery employs the assumptions of faithfulness (definition \ref{def:faithfulness}) and full observability. Compatibility asserts that d-separations in a graph $\mathcal{G}$ imply conditional independences in an associated probability distribution, while faithfulness holds that the reverse implication also holds. Full observability holds that the set of observed variables corresponds one-to-one to the set of vertices in the causal Bayesian network $\mathcal{G}$. Together these assumptions allow inference to proceed from conditional independences in a probability distribution to edges in a graph.
+
+The assumptions of faithfulness and full observability are usually not enough to determine a unique DAG from a probability distribution $P_V(\RV{V})$. Instead they determine an equivalance class of ``plausible'' DAGs that can be represented as Completed Partially Directed Acyclic Graphs (CPDAGs). Two DAGs $\mathcal{G}_1=(\mathbf{V},\mathbf{E}_2)$ and $\mathcal{G}_2=(\mathbf{V},\mathbf{E}_2)$ are in the same CPDAG equivalence class if for every edge $V_i\to V_j\in \mathbf{E}_1$, either $V_i\to V_j\in \mathbf{E}_2$ or $V_i\to V_j\in \mathbf{E}_2$ and $\mathcal{G}_1$ and $\mathcal{G}_2$ share every v-structure (definition \ref{def:v_structure})\cite{pearl_causality:_2009}. That is, edges that do not form v-structures may be oriented in either direction, while edges that do form v-structures must agree for both $\mathcal{G}_1$ and $\mathcal{G}_2$. All DAGs in the same CPDAG equivalence class share d-separation properties, and so the CPDAG represents the smallest class of DAGs that can be deduced from the conditional independence properties of $P_\mu(\RV{V})$. If an ordering of variables is available, a unique DAG can be determined from conditional independence relations\cite{spirtes_algorithm_1991}. In fact, if an ordering is available and full observability holds, a unique DAG that induces the same set of interventional distributions as the correct DAG can be deduced without appealing to conditional independences at all\cite{peters_structural_2013,bareinboim_local_2012}.
+
+A number of algorithms employ these assumptions in order to discover causal structure\cite{pearl_causality:_2009,spirtes_causation_1993}, with the PC algorithm being the best known. Because the number of conditional independences that can be tested grows very quickly with the number of variables under consideration\cite{matus_conditional_1995}, the PC algorithm efficiently chooses a set of conditional independence tests which - if faithfulness holds - yield the correct CPDAG \cite{spirtes_algorithm_1991}.
+
+The faithfulness assumption itself is controversial. It has been argued that violations of faithfulness must arise from unlikely or unstable alignments of causal mechanisms  \cite{spirtes_causation_1993} (pp41-2) \cite{meek_strong_2013,pearl_causality:_2009}. On the other hand, study of approximate violations of faithfulness have shown that they can become very likely as the degree of the graph rises \cite{uhler_geometry_2013}, and empirically it has been found that weakening the faithfulness assumption results in a reduction in the number of wrongly directed edges in a number of test cases, leading to the development of the conservative PC algorithm (CPC) \cite{ramsey_adjacency-faithfulness_2012}.
+
+A related family of methods of determining network structures are Bayesian or score-based approaches. Again, full observability is typically assumed, and a prior is constructed over network parametrisations conditional on network structure. Structures which result in ``more likely'' parametrisations are favoured\cite{heckerman_learning_1995,cooper_bayesian_1992,malone2014scoring}. Score based approaches are combined with structural search algorithms to produce structural learning algorithms Greedy Equivalence Search(GES)\cite{chickering_optimal_2003}. Bayesian approaches do not assume faithfulness, but they typically do assume that any pair of DAGs with the same set of d-separation properties are equally likely and penalise additional edges in a DAG. Exactly how these assumptions relate to faithfulness is not clear to me.
+
+Full observability is unlikely to be a realistic assumption in many cases. Latent variable models that are distinguishable on the basis of an extended assumption of faithfulness have been characterised\cite{shpitser_identification_2006,evans_margins_2015}, and a number of algorithms for causal discovery have been proposed for finding latent variable models faithful to an observed probability distribution\cite{claassen_learning_2013,colombo_learning_2012,spirtes_causation_1993}.
+
+\subsubsubsection{Algorithmic independence of conditionals}
+
+A more recent approach to causal discovery employs the principle of \emph{algorithmic independence of conditionals}. Recall that faithfulness was justified on the basis that unfaithful distributions implied ``unlikely'' alignments between causal mechanisms. The independence of conditionals (IC) approach aims to formalise the idea that causal mechanisms are independent using Kolmogorov complexity. Given a Markov kernel $\kappa:\PA{X}{}\to \Delta(X)$, the Kolmogorov complexity $K^T(\kappa)$ relative to turing machine $T$ is (roughly speaking) the length of the shortest program on $T$ that computes $\kappa(\RV{X}|\PA{}{X})$\cite{kolmogorov_three_1968,lemeire_replacing_2013}. Two causal mechanisms $\kappa_1:\PA{}{V_1}\to V_1$ and $\kappa_2:\PA{}{V_2}$ are algorithmically independent if $K^T(\kappa_1\times\kappa_2)=K^T(\kappa_1)+K^T(\kappa_2)$. The formalisation is aspirational, and practical applications of the IC approach typically employ the general principle that causal mechanisms should not contain information about one another rather than attempting to approximate the Kolmogorov complexity of the mechanisms directly\cite{lemeire_replacing_2013}. 
+
+The IC approach has developed a number of rules for deciding between the two structures $X\to Y$ and $Y\to X$ given dependent random variables $\RV{X}$ and $\RV{Y}$. Additive noise models assume that the relationship in the causal direction is of the form $\RV{X}=f(\RV{Y})+\epsilon$. Inference rules have been developed for the cases where $\epsilon$ is non-Gaussian and $f$ is a linear function or where $f$ is nonlinear\cite{kano_causal_2003,hoyer_estimation_2008,hoyer_nonlinear_2009}. Information geometric causal inference posits that if the relationship between $X$ and $Y$ is nonlinear, the effect is likely to have higher entropy than the cause. Both methods distinguish cause from effect at rates better than chance for real-world data \cite{mooij_j.m._distinguishing_2016}.
+
+Bivariate causal inference methods can be used to provide structure scores, which can then be combined with structural seach algorithms\cite{press_elements_nodate}.
+
+The theory of Kolmogorov complexity that motivates the IC approach is closely related to the MDL decision rule discussed in section \ref{sec:ML_problems}. In fact, the MDL decision principle has been used to distinguish causal structures in the bivariate case\cite{budhathoki_causal_2016}.
+
+\subsubsubsection{Assessing the performance of fully observable causal discovery}
+
+Assessing the performance of causal discovery methods is difficult, as they are very often tested on synthetic data or on real data that is generated from a system defined by a well-understood composition of mechanisms\cite{spirtes_causation_1993,ramsey_adjacency-faithfulness_2012,peters_structural_2013,chickering_learning_2002}. Results are usually reported in terms of the Hamming distance, and the implications of this for the loss in a causal decision problem are unclear. An alternative score that has been proposed is the structural intervention distance (SID) that counts the number of mis-identified interventional distributions\cite{peters_structural_2013}.
+
+There are few experimental evaluations of the use of causal discovery to improve estimates of a particular interventional distribution. One such experiment has found that using the PC algorithm followed by estimation of the class of interventional distributions admitted by the resulting class of DAGS substantially improved upon plain regression for the purpose of estimating causal effects\cite{maathuis_predicting_2010}.
+
+\subsubsection{Estimation of Causal Effects}
+
+For causal decision problems, causal structure learning is a secondary task. Ultimately a consequence kernel is sought which is, by whatever means we have to judge it, ``correct''. This is much more closely related to the problem of estimating causal effects.
+
+\subsubsubsection{Experiments and Quasi-experiments}
+
+Causal theories are closely connected with the practices of conducting \emph{randomised experiments}. An early example of the notation now associated with potential outcomes can be found in work by Neyman discussing the design of randomised agricultural experiments\cite{splawa-neyman_application_1990}. As has been noted earlier, idealised randomised experiments are one way in which it has been proposed that interventional distributions may be observed\cite{pearl_causality:_2009}. An idealised experiment is simple to describe in either framework. Given a set of treatments $A=\{0,1\}$ and a set of outcomes $X=\{0,1\}$, suppose that the treatments are ``set randomly'' and that $X$ is an effect of $A$. In the case of graphical models, this means we assume the causal Bayesian network $\mathcal{G}$ (figure \ref{fig:rand_expt}).
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[-latex ,auto ,node distance =1 cm and 2cm ,on grid ,
+    semithick ,
+    variable/.style ={ circle ,top color =white , 
+    draw , text=blue , minimum width =1 cm},
+    kernel/.style={rectangle,draw}
+    ]
+    \node (O) {$1$};
+    \node (A) [right = of O] {$A$};
+    \node (R) [right = of A] {$X$};
+    \node (U) [above = of R] {$U$};
+    \draw (O) -- (A);
+    \draw (A) -- (R);
+    \draw (U) -- (R);
+    \end{tikzpicture}
+
+    \caption{Causal structure for an idealised randomised experiment. $U$ represents unobserved factors.}
+    \label{fig:rand_expt}
+\end{figure}
+
+In the case of potential outcomes, the randomisation justifies the assumption of ignorability
+\begin{align}
+    \RV{X}^{A=a} \CI \RV{A}
+\end{align}
+
+Note that these examples are isomorphic to \ref{sec:smdp_graph} and \ref{sec:smdp_po}. It is possible in each case to estimate the average treatment effect (abbreviated ATE; see section \ref{sec:treatment_effect}) by $P_{\mathcal{G}}(\RV{X}|do(A=a))=P_\mu(\RV{X}|\RV{A}=a)$ and $P_\mu(\RV{X}^{A=a})=P_\mu(\RV{X}|\RV{A}=a)$ respectively.
+
+Real world experiments are more complex. Much attention has been paid to the problem of \emph{partial compliance}. This problem was touched on in the discussion of treatment effects, and we will not re-tread the discussion of formulating this problem as a decision problem, and simply discuss the estimation of the average treatment effect. Let $A=\{0,1\}$ be a set of treatments, $X=\{0,1\}$ a set of outcomes and $Z=\{0,1\}$ a set of treatment assignments. We will say $Z=1$ identifies the ``treatment group'' and $Z=0$ identifies the ``control group''. We assume that $Z$ is ``randomly generated'' and that $X$ and $A$ are effects of $Z$. The assumed CBN is therefore
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[-latex ,auto ,node distance =1 cm and 2cm ,on grid ,
+    semithick ,
+    variable/.style ={ circle ,top color =white , 
+    draw , text=blue , minimum width =1 cm},
+    kernel/.style={rectangle,draw}
+    ]
+    \node (O) {$1$};
+    \node (Z) [right = of O] {$Z$};
+    \node (A) [right = of Z] {$A$};
+    \node (R) [right = of A] {$X$};
+    \node (U) [above right = 1cm and 1cm of A] {$U$};
+    \draw (O) -- (Z);
+    \draw (Z) -- (A);
+    \draw (A) -- (R);
+    \draw (U) -- (R);
+    \draw (U) -- (A);
+    \end{tikzpicture}
+
+    \caption{Causal structure for an idealised randomised experiment. $U$ represents unobserved factors.}
+    \label{fig:rand_expt_imp}
+\end{figure}
+
+In the potential outcomes framework, we may assume ignorability for $Z$ on $A$ and $Z$ on $X$:
+
+\begin{align}
+    \RV{X}^{Z=z} &\CI \RV{Z}\\
+    \RV{A}^{Z=z} &\CI \RV{Z}
+\end{align}
+
+We cannot in general estimate the ATE of $A$ on $X$, but we can estimate the ATE of $Z$ on $A$ and $Z$ on $X$. The latter is known as the ``intention to treat'' estimate (see section \ref{sec:treatment_effect}). Conditions have been derived under which the effect of $A$ on $X$ may be identified for particular sub-populations such as the ``effect of treatment on the treated) (again, see section \ref{sec:treatment_effect})\cite{angrist_identification_1996,pearl_causality:_2009}. Alternatively, it is possible to establish bounds on the ATE of $A$ on $X$\cite{balke_bounds_1997}. The formulations given here are also very similar to the formulations of quasi-experiments or instrumental variables methods\cite{angrist_instrumental_2001}. In this case, the variable $Z$ does not represent a deliberately randomised treatment assignment, but it does represent some source of variation that is assumed, as in \ref{fig:rand_expt_imp}, not to share any common causes with the outcome $X$\cite{angrist_mastering_2014}. Despite their similarity as causal inference problems, imperfect experiments and quasi-experiments may differ substantially as decision problems. We have already considered different losses that may be relevant in imperfect or quasi-experiments (again, section \ref{sec:treatment_effect}). It may also be the case that the treatment assignment indicator $Z$ is or is not a reasonable approximation of the actions under consideration \cite{heckman_randomization_1991}; the latter case demands another layer of analysis to connect the actual actions in question with the estimated causal effects.
+
+\subsubsubsection{Causal Inference from Observational Data}
+
+Causal inference in experimental and quasi-experimental contexts is a special case of causal inference from observational data where there is good reason to believe certain sructural or ignorability assumptions hold. The opposite end of this spectrum is the problem of causal inference from observational data where there is \emph{not} good reason to believe certain structural or ignorability assumptions hold. In the structural case, this problem would appear to call for causal discovery as an initial step (a technique which, as noted above, has been employed with some success). There is an inference methodology known as \emph{observational causal inference} that attempts to generate causal estimates in the no-good-reason-to-believe-assumptions regime (henceforth ``NGR'') without structural discovery.
+
+We will formalise the NGR as a structural model and a separate dataset description. We will presume that the interventional distribution is faithful to the graph $\mathcal{G}$ (figure \ref{fig:NGR}), and that we seek the consequence kernel given by $a\mapsto P_\mathcal{G}(\RV{X}|do(A=a))$.
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[-latex ,auto ,node distance =1 cm and 2cm ,on grid ,
+    semithick ,
+    variable/.style ={ circle ,top color =white , 
+    draw , text=blue , minimum width =1 cm},
+    kernel/.style={rectangle,draw}
+    ]
+    \node (A)  {$A$};
+    \node (U) [above right = 1cm and 1cm of A] {$U$};
+    \node (X) [right = of A] {$X$};
+    \draw (A) -- (X);
+    \draw (U) -- (X);
+    \draw (U) -- (A);
+    \end{tikzpicture}
+
+    \caption{Causal structure for the NGR regime. $U$ is an unobserved variable.}
+    \label{fig:NGR}
+\end{figure}
+
+We have a dataset that allows us to estimate the distribution $P_\mu(\RV{X},\RV{A},\RV{C})$ precisely for some set of covariates $\RV{C}$. This problem is ill-posed: the covariate $\RV{C}$ does not appear in our structural assumptions. If we were to assume $\RV{C}=\RV{U}$ then we could determine the interventional distributions $P_{\mathcal{G}}(\RV{X}|do(A=a))$ via Eq. \ref{eq:trunc_fact}:
+\begin{align}
+    P_{\mathcal{G}}(\RV{X},\RV{C}|do(A=a)) &= P_\mu(\RV{X}|\RV{C},\RV{A}=a) P_\mu(\RV{C})\\
+    P_{\mathcal{G}}(\RV{X}|do(A=a)) &= \sum_{c\in C} P_\mu(\RV{X}|\RV{C}=c,\RV{A}=a) P_\mu(\RV{C}=c) \label{eq:adjustment}
+\end{align}
+
+We will call Eq. \ref{eq:adjustment} \emph{covariate adjustment}. Observational causal inference aims to estimate causal effects by covariate adjustment. In the potential outcomes setting, the assumption of conditional ignorability is made, which entails the same estimand as in Eq. \ref{eq:adjustment} \cite{imai_covariate_2014,rubin_causal_2005,dorie_automated_2017}:
+\begin{align}
+    \RV{X}^{A=a} \CI \RV{A} | \RV{C} \label{eq:PO_oci}
+\end{align}
+
+In comparisons to experiments, this approach has often been criticised as yielding unreliable estimates\cite{fraker_adequacy_1987,lalonde_evaluating_1986}, though these comparisons have themselves been subject to some criticism\cite{heckman_randomization_1991}. A recent comparison with very large quantities of data and sets of covariates continued to find substantial disagreement with experimental data\cite{gordon_comparison_2018}.
+
+A lot of analysis of observational causal inference has focussed on techniques for estimating the right hand side of equation \ref{eq:adjustment}. The consequences of the assumptions $\RV{C}=\RV{U}$ or \ref{eq:PO_oci} are less well understood. It is known that in some cases it can lead to a worse estimate of the causal effect of $\RV{A}$ on $\RV{X}$ than the a naive approach which simply assumes that $P_\mu(RV{X}|\RV{A})$ gives the appropriate causal effect. I am not aware of any work on examining whether this is likely or not.
+
+The conditions under which covariate adjustment leads to a more biased estimate depend on a so-called ``m-strcucture.
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[-latex ,auto ,node distance =1 cm and 2cm ,on grid ,
+    semithick ,
+    variable/.style ={ circle ,top color =white , 
+    draw , text=blue , minimum width =1 cm},
+    kernel/.style={rectangle,draw}
+    ]
+    \node (A) {$A$};
+    \node (Z) [above right = of A] {$C$};
+    \node (X) [right = 4cm of A] {$X$};
+    \node (A1) [right = 4cm of X] {$A$};
+    \node (U1) [above right = 2cm and 1cm of A1] {$U1$};
+    \node (Z1) [above right = of A1] {$C$};
+    \node (U2) [above right = 1cm and 1cm of Z1] {$U2$};
+    \node (X1) [right = 4cm of A1] {$X$};
+    \draw (A) -- (X);
+    \draw (Z) -- (X);
+    \draw (Z) -- (A);
+    \draw (U1) -- (Z1);
+    \draw (U2) -- (Z1);
+    \draw (U1) -- (A1);
+    \draw (U2) -- (X1);
+    \draw (A1) -- (X1);
+    \end{tikzpicture}
+    \caption{Two graphs $\mathcal{G}$ and $\mathcal{G}_m$, demonstrating the ``default assumption'' and an m-structure respectively}
+    \label{fig:my_label}
+\end{figure}
+
+
+In the first case, the interventional distribution is given by Eq. \ref{eq:adjustment}, while in the second case 
+\begin{align}
+    P_{\mathcal{G}_m}(\RV{X}|do(A=a))&=P_\mu(\RV{X}|\RV{A}=a) \label{eq:m_structure}\\
+\end{align}
+
+Given $P_\mu(\RV{X},\RV{A},\RV{C})$, the two structures are not distinguishable on the basis of conditional independences. The distinction between the two situations can also be described using the language of potential outcomes\cite{sjolander_propensity_2009}. Under the default assumption $\mathcal{G}$, we make the assumption \ref{eq:PO_oci}, while in the second case the following assumptions are appropriate:
+
+\begin{align}
+    X^{A=a} &\not\CI A | Z \label{eq:mstruc_po3}\\
+    X^{A=a} &\CI A \label{eq:mstruc_po4}
+\end{align}
+
+Proponents of the potential outcomes approach have given unclear advice on the question of whether covariate adjustment is appropriate in the second case \cite{rubin_authors_2008}\cite{noauthor_resolving_2009}. 

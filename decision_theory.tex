@@ -1,0 +1,243 @@
+%!TEX root = main.tex
+
+\subsection{Decision Theory} \label{sec:decision_theory}
+
+\emph{Decision theory} is the study of decision making under uncertainty. The practice of deciding under uncertainty is very old. Evidence of gambling games goes back at least as far as ancient Egypt\cite{hacking_emergence_2006}, and deciding under uncertainty in a broader sense surely goes back much further still. The modern treatment of probability and decision theory is considered to have arisen in the period around 1660 in the work of Huygens, Pascal, Fermat and Cardano \cite{hacking_emergence_2006}. The idea of \emph{expected value} was developed at this time, often credited to Pascal in a correspondence with Fermat when the pair were discussing the problem of fair division of returns in a game that finishes early. 
+
+In its early development, expected value described the prospects of an individual participating in a gambling game - that is, a game which in the end would result in a gain or loss of money. The idea of \emph{utility} or satisfaction was introduced to capture the abstract measure of ``something an individual wants'', which may not be as easily quantified as money. This idea was substantially advanced by Von Neumann and Morgenstern, who showed that for any individual, if their preferences over a set of options satisfied four conditions (the ``VNM axioms'') then there must exist some utility function $u:X\to \mathbb{R}$ such that this individual's preferences are described by the expected value of this function for the set of options being considered\cite{von_neumann_theory_1944}.
+
+\begin{definition}[Ordinary decision problem]
+Given a measurable space $(X,\mathcal{E})$ and a set of options $\mathcal{P}\subset \Delta(\mathcal{E})$, a general decision problem is the task of selecting an optimal option $P^*$ from $\mathcal{P}$. An option is optimal if, given some preference relation $\vartriangleright,\sim$, $P^*\vartriangleright P$ or $P^*\sim P$ for all $P\in \mathcal{P}$. 
+\end{definition}
+
+\begin{definition}[VNM Rationality]
+Consider an individual faced with a decision problem $(X,\mathcal{E},\mathcal{P})$. If the preference relation $(\vartriangleright, \sim)$ satisfies the following axioms, the preference relation is \emph{VNM rational}:
+
+\textbf{Completeness:} For any two options $P_1,P_2\in \mathcal{P}$, we have exactly one of $P_1\vartriangleright P_2$, $P_2\vartriangleright P_1$ or $P_1 \sim P_2$.
+
+\textbf{Transitivity:} If $P_1\vartriangleright P_2$ and $P_2\vartriangleright P_3$ then $P_1\vartriangleright P_3$. If $P_1\sim P_2$ and $P_2\sim P_3$ then $P_1\sim P_3$.
+
+\textbf{Continuity:} If $P_1\vartriangleright P_2 \vartriangleright P_3$, then there exists $\epsilon$ with $0<\epsilon<1$ such that $P_2 \vartriangleright (1-\epsilon) P_1 + \epsilon P_3$.
+
+\textbf{Independence:} $P_1 \vartriangleright P_2$ implies that $P_1 \vartriangleright \epsilon P_1 + (1-\epsilon) P_2$ and $\epsilon P_1 + (1-\epsilon)P_2 \vartriangleright P_2$ for all $0<\epsilon<1$.
+\end{definition}
+
+If a set of preferences is VNM rational, then there exists a utility function $u:X\to \mathbb{R}$ such that $P_1\vartriangleright P_2 \Leftrightarrow \mathbb{E}_{P_1}[u(X)] > \mathbb{E}_{P_2}[u(X)]$. This is shown in \cite{von_neumann_theory_1944}.
+
+It is a matter of debate as to whether VNM rationality adequately captures what we intend to mean by the word ``rationality''\cite{schoemaker_expected_1982}. A significant objection, however, is that the theory of VNM rationality aims to account for how individuals may behave rationally. The sum of utilities for two different individuals is given no particular meaning without additional assumptions. However, questions of statistical and causal inference often affect multiple individuals, and so the problem of interindividual comparison is relevant\cite{von_neumann_theory_1944,savage_theory_1951}.
+
+\subsubsection{Statistical Decision Theory}
+
+A statistical decision problem is the task of deciding on an appropraite course of action given the values of a sequence of random variables, as opposed to being given the probability distributions directly as in ordinary decision problems. Here we present a simplified version of the definition given by Wald \cite{wald1950statistical}:
+
+\begin{definition}[Statistical decision problem]
+A statistical decision problem $\langle X,\mathcal{E},\mu,\RV{X}_{S},\mathcal{J},D,\mathcal{L}\rangle$ is a probability space $(\mathbf{X}, \mathcal{X},\mu)$ where $\mathbf{X}=X^\infty$, a class of possible distributions $\mathcal{J}\subset \Delta(\mathcal{X})$, a decision space $D$, a loss function $\mathcal{L}:D\times \Delta(\mathcal{X})\to [0,\infty)$ and a set $S\subset \mathbb{N}$ of random variables $\RV{X}_{S}=\{\RV{X}_i|i\in S\}$ with $S\subset\mathbb{N}$ and $X_i:\mathbf{X}\to X$. A decision $d\in D$ is optimal if $\mathcal{L}(d,\mu)=0$, and a decision $d_1$ is preferred to $d_2$ if $\mathcal{L}(d_1,\mu)<\mathcal{L}(d_2,\mu)$.
+
+Suppose the decision space $D$ is measurable with $\sigma$-algebra $\mathcal{D}$.
+
+The problem is to choose a decision function $\delta:X^S\to \Delta(\mathcal{D})$.
+\end{definition}
+
+$\delta$ and $\mu$ induce a joint distribution $P^{\mu\delta}\in \Delta(\mathcal{E}\times \mathcal{D})$. For $e\in \mathcal{E}$ and $d\in \mathcal{D}$, $P^{\mu\delta}(e,d)=\int_e \delta(d|x)d\mu(x)$. This motivates the definition of risk $r:\Delta(\mathcal{E})\times (\Delta(\mathcal{D}))^{X_S}\to \mathbb{R}$ where
+\begin{align}
+    r(\mu,\delta) = \int_{\mathcal{D}} L(d,\mu)dP^{\mu\delta}(d)
+\end{align}
+Where the aim of an ordinary decision problem is to select the best option, for a statistical decision problem the aim is to select the best decision function. Were $\mu$ known in advance, we could consider the set of distributions given by $P^{\mu\delta}$ for each $\delta$ to be options and under some conditions the loss may take the form of a negative expected utility. As $\mu$ is not known in advance, Wald defines two solutions to a statistical decision problem: the \emph{Bayes solution} and the \emph{minimax solution}. Suppose there is a $\sigma$-algebra $C_{\mathcal{J}}$ on $\mathcal{H}$ and a prior probability measure $\xi\in \Delta(C_{\mathcal{H}})$. The \emph{Bayes risk} $r^*:\Delta(C_{\mathcal{J}})\times (\Delta(\mathcal{D}))^{X_S}\to \mathbb{R}$ is the expectation of the risk with respect to $\xi$:
+\begin{align}
+    r^*(\xi,\delta) = \int_{\mathcal{J}} r(\mu,\delta)d\xi
+\end{align}
+A Bayes solution to a decision problem is a decision function $\delta_b$ where, for all $\delta\in \Delta(\mathcal{D})^{X_S}$,
+\begin{align}
+    r^*(\xi,\delta_b)\leq r^*(\xi,\delta)
+\end{align}
+
+The minimax solution is a decision function $\delta_m$ where, for all $\delta\in \Delta(\mathcal{D})^{X_S}$,
+\begin{align}
+    \sup_{\mu,\mathcal{J}} r(\mu,\delta_m) \leq \sup_{\mu,\mathcal{J}} r(\mu,\delta)
+\end{align}
+
+A further distinction between ordinary and statistical decision problems is the difference between a loss and a utility. The preferences implied by a utility function are invariant up to affine transformations of the function\cite{von_neumann_theory_1944}, so the utility of a single option is not meaningful in itself. On the other hand, a loss is minimised at 0, so it is meaningful if a particular decision function has a risk of 0, and a risk can quantify ``what you're missing out on''. Savage proposes that losses may be connected to utilities via the idea of \emph{regret}\cite{savage_theory_1951}. If we posit a utility function $u:\Delta(\mathcal{E}\times \mathcal{D})\to \mathbb{R}$ such that, given $\mu$, the decision function $\delta_1$ has a utility $u(P^{\mu\delta_1})$, then the regret associated with a choice $\delta_1$ is given by
+\begin{align}
+    R(\delta_1,\mu) = \min_{\delta\in \Delta(D)^X} u(P^{\mu\delta}) - u(P^{\mu\delta_1})
+\end{align}
+
+
+
+\subsubsection{Machine Learning Problems}\label{sec:ML_problems}
+
+Machine learning problems are statistical decision problems. Consider the example of label prediction: given an IID sequence of random variables $(\RV{X},\RV{Y})=\{(\RV{X}_i,\RV{Y}_i)|i\in \mathbb{N}\}$ on $X\times Y$ distributed according to $P_\mu(\RV{X},\RV{Y})$, and a hypothesis space $\mathcal{H}$ find a classifier $\mathcal{H}\ni h:X\to Y$ that minimises the\emph{prediction error}\cite{shalev-shwartz_understanding_2014}:
+\begin{align}
+    L_{P_\mu}(h) = \mathbb{E}_{P_\mu}[1-\delta_{h(\RV{X})\RV{Y}}] \label{eq:prediction_loss}
+\end{align}
+The function $(P_\mu,h)\mapsto L_{P_\mu}(h)$ is a loss; it may also be called an error rate or a risk, though this is not a risk in the sense defined above. The prediction error is a loss that weights all errors equally, which is not appropriate for every classification task - for example, in criminal justice it is often held that false positives $(y=0,h(x)=1)$ are much worse than false negatives $(y=1,h(x)=0)$. 
+
+Related to the loss (Eq. \ref{eq:prediction_loss}) is the \emph{empirical risk}. It is not possible to directly minimise the loss given a finite sample of data, so instead a learner may minimise the empirical risk. Given some $S\subset \mathbb{N}$, the training observations are $(x,y)_S=\{(x_i,y_i)|i\in S\}$ with $|S|=s$.  The empirical risk for the problem defined above is
+\begin{align}
+    L_S(h) = \frac{1}{s} \sum_{i\in S} (1-\delta_{h(x_i)y_i})
+\end{align}
+
+If we identify the decision set with the hypothesis space $D=\mathcal{H}$, then the function $(x,y)_S\mapsto \argmin_h L_S(h)$ is a decision function. 
+
+On finite samples $S$, minimising the empirical risk obtained via ``direct translation'' of the loss may not lead to good classifier performance\cite{shalev-shwartz_understanding_2014,vapnik_nature_2013}. The loss $L_{P_\mu}(h)$ can be written as a combination of the empirical risk $L_S(h)$ and the generalisation error $g(h):= L_{P_\mu}(h)-L_S(h)$:
+\begin{align}
+    L_{P_\mu}(h) = L_S(h) + g(h)
+\end{align}
+
+The domain of probably-approximately-correct (PAC) learning establishes high probability bounds on the loss for a given decision function. An important class of bounds depend on the \emph{VC dimension} of the hypothesis class $\mathcal{H}$:
+
+\begin{definition}[VC dimension of a set of indicator functions]
+The VC dimension of a class $\mathcal{H}$ of functions $X\to [0,1]$ is the maximum number $v$ of vectors $x_0,...,x_v\in X$ such that for every possible assignment of indicators $\mathbf{i}\in \{0,1\}^v$ there exists $h\in \mathcal{H}$ such that $\mathbf{i}=[h(x_0),...,h(x_v)]$. We say that $\mathcal{H}$ shatters the set $\{x_0,..,x_v\}$.
+\end{definition}
+
+Given $s$ observations and a hypothesis class $\mathcal{H}$ with VC dimension $v$, with probability $1-\lambda$ the loss of a hypothesis $h$ can be bounded by
+\begin{align}
+    L_{P_\mu}(h) \leq L_S(h) + \sqrt{\frac{h(1+\ln(2s/h))-\ln\lambda}{s} } \label{eq:vc_bound}
+\end{align}
+
+Eq. \ref{eq:vc_bound} expresses the idea that ``simpler'' hypothesis classes (in the sense of VC dimension) have better generalisation capabilities. On the other hand, more complex hypothesis classes may be able to better fit the observed data. The principle of \emph{structural risk minimisation} aims to balance the tradeoff between the empirical risk and the generalisation error. Suppose we can write a hypothesis class $\mathcal{H}=\bigcup_{i=0}^\infty H_i$ and define $\epsilon_i(s,\lambda) = \sqrt{\frac{h(1+\ln(2s/h))-\ln\lambda}{s} } $ and $w:\mathbb{N}\to [0,1]$ such that $\sum{i=0}^\infty w(i)\leq 1$. Then it can be shown that for all $h\in \mathcal{H}$\cite{shalev-shwartz_understanding_2014}
+
+\begin{align}
+    L_{P_\mu}(h) \leq L_S(h) + \min_{n:h\in \mathcal{H}_n}\epsilon_n(s,\lambda w(n)) \label{eq:srm}
+\end{align}
+
+The structural risk minimisation decision function chooses a hypothesis $h$ that minimises the right hand side of Eq. \ref{eq:srm}. This rule balances the flexibility of the hypothesis class to fit the observed data and the generalisation bound determined by its function class. 
+
+An alternative paradigm to structural risk minimisation is minimum description length (MDL). Suppose we have a countable hypothesis class $\mathcal{H}$ and we assign to each hypothesis $h$ a weight $w(h)\in [0,1]$ such that $\sum_{i=0}^\infty w(i)\leq 1$. In this case an SRM decision rule based on a tighter bound than the VC-dimension can be given:
+\begin{align}
+    \delta((x,y)_S)\in \argmin_{h\in \mathcal{H}} \left[ L_S(h) + \sqrt{\frac{-\ln(w(h))+\ln(2/\lambda)}{2s}}\right]
+\end{align}
+
+The MDL rule assigns a weight to each hypothesis based on its \emph{description length}, a notion formalised in \cite{shalev-shwartz_understanding_2014} and elsewhere. The MDL principle is motivated by the principle of Occam's razor: a simple hypothesis (one that can be more economically encoded) is one that is more likely to be true.
+
+\subsubsection{Causal Decision Theory}\label{ssec:CDT}
+
+The pursuit of a causal decision theory is motivated by an observation about the nature of losses in a statistical decision problem. A loss in a statistical decision problem maps a decision $d$ and the distribution $\mu$ to the positive reals, where $\mu$ has no dependence on $d$. However, in many cases the natural way to measure loss (or utility) is by accounting for the consequences of the decision $d$. To illustrate ``consequence-free'' losses, Savage gives the example of deciding to carry an umbrella on the commute to work \cite{savage_theory_1951}. To simplify the story, we will discuss a pointwise loss over acts $D=\{\text{carry},\text{ don't carry}\}$ and states $X=\{\text{rain, }\text{shine}\}$, given in Table \ref{tab:umbrella}.
+\begin{table}[h]
+    \centering
+        \begin{tabular}{ | c | c | c | }
+        \hline
+                              & \textbf{Rain} & \textbf{Shine} \\ 
+                              \hline
+         \textbf{Carry}       & 0 & 5 \\  
+         \textbf{Don't carry} & 10 & 0   \\ 
+         \hline
+        \end{tabular}
+    \caption{Pointwise loss for the problem of carrying an umbrella.}
+    \label{tab:umbrella}
+\end{table}
+
+While this loss is not unreasonable, it is ultimately the consequence of carrying an umbrella in the rain that we are interested in. If we could avoid getting wet without carrying an umbrella despite the rain, we would not penalise the decision not to carry it in rain. The importance of consequences is clearer in situations where consequences are uncertain, such as in the case of treating a patient for an illness. Here we have acts $D=\{\text{prescribe antibiotics, don't prescribe antibiotics}\}$ and states $X=\{\text{sick, not sick}\}$. A loss function is proposed in Table \ref{tab:illness}.
+
+\begin{table}[h]
+    \centering
+        \begin{tabular}{ | c | c | c | }
+        \hline
+                              & \textbf{Sick} & \textbf{Not Sick} \\ 
+                              \hline
+         \textbf{Prescribe antibiotics}       & 0 & 5 \\  
+         \textbf{Don't prescribe antibiotics} & 10 & 0   \\ 
+         \hline
+        \end{tabular}
+    \caption{Pointwise loss for the problem of treating an illness.}
+    \label{tab:illness}
+\end{table}
+
+Unlike the umbrella problem, it is not clear whether the loss in Table \ref{tab:illness} is sensible. If the patient had an illness that was not responsive to antibiotics, it would be inappropriate, while it may be appropriate if the patient had an illness that was responsive to antibiotics. Here it is natural to evaluate the decision on the basis of its consequences rather than directly on the (state, decision) pair.
+
+While this distinction is intuitively simple, the correct way to include consequences a statistical decision problem is not obvious. Note that under a reasonable definition of consequences, a statistical decision problem does not allow for consequences to depend on the decision.
+
+Recall that given a probability space $(X,\mathcal{E})$, a decision space $(D,\mathcal{D})$ and a decision function $\delta\in \Delta(D)^X$, for $e\in\mathcal{E}$ and $d\in\mathcal{D}$ we have
+\begin{align}
+    P^{\mu\delta}(e\cap d) = \int_e \delta(d|x) d\mu(x)
+\end{align}
+
+Recall also that for a sample set $S\subset \mathbb{N}$ we require the decision function be constant on $S^C$. Given $X=X_S\times X_{S^C}$ write $x=(x_S,x_{S^C})$ for $x_S\in X_S$ and $x_{S^C}\in X_{S^C}$. Then
+
+\begin{align}
+    P^{\mu\delta}(d|x) &:= \delta(d|x)\\
+                        &= \delta(d|x_S,x_{S^C})\\
+                        &= \delta(d|x_S)
+\end{align}
+
+That is, given random variables $\RV{X}_S:X\times D \to X_S$ and $\RV{X}_{S^C}:X\times D\to X_{S^C}$ and $\RV{D}:X\times D\to D$, we have
+\begin{align}
+    \RV{D}\CI_{P^{\mu\delta}} \RV{X}_{S^C} | \RV{X}_S
+\end{align}
+
+Call the random variables $\RV{X}_S$ on which $\delta$ depends nontrivially the ``causes'' of the decision and call the variables $\RV{X}_{S^C}$ the ``potential consequences'' of the decision. Then the definition of $P^{\mu\delta}$ holds that the decision is independent of the potential consequences conditional on the causes.
+
+An early proposal that has come to be known as \emph{evidential decision theory} was made by Jeffrey in 1965. Here we suppose that $X$ and $D$ are discrete spaces and there exist some random variables $\RV{X}_e$ and $\RV{D}_e$ with distribution $P_{e}(\RV{X}_e,\RV{D}_e)$\cite{jeffrey_logic_1990}. Defining a loss pointwise $l:X\times D\to [0,\infty)$, evidential decision theory recommends that a decision $d^*\in D$ is chosen such that
+\begin{align}
+    d^*\in \argmin_{d\in D} (\mathbb{E}_{P_{e}}[l(d,X_e)|D_e=d])
+\end{align}
+Evidential decision theory does not clearly specify the probability space or the random variables $\RV{X}_e$ and $\RV{D}_e$. It is just supposed that $P_{e}$ is known. There are a number of purported counterexamples to evidential decision theory and a rival theory termed \emph{causal decision theory}. The status of both the counterexamples and the alternative theory depend on particulare interpretations of that the distribution $P_e$ ought to be.
+
+Two of these counterexamples will be presented; the first is attempts to present a mundane example, while the second is the famous Newcomb's problem introduced by Nozik\cite{nozick_newcombs_1969}.
+
+\begin{example}[Visiting the doctor]\label{ex:doctor}
+Geoff is considering visiting the doctor. His available decisions are $D=\{0,1\}$ (avoid the doctor, see the doctor respectively), and the outcomes he is interested in are $X=\{0,1\}$ (not sick, sick respectively). His preferences can be expressed as
+\begin{align}
+    l(d_e,x_e) = x_e
+\end{align}
+i.e. he would prefer not to be sick, and does not ultimately care whether he visits the doctor or not.
+
+Geoff has access to a sequence $(\RV{X},\RV{D})_n=\{(\RV{X}_i,\RV{D}_{i+1}):i\in\{0,..,n-1\}\}$ of random variables representing whether he visited the doctor on day $i$ and whether he was sick on day $i+1$ previously to his present decision. He has deduced that $\mathbb{E}_{P_\mu}\left[\frac{\sum_i^{n-1} \llbracket \RV{X}_i=1\And \RV{D}_i=1\rrbracket}{\sum_i^{n-1} \llbracket \RV{D}_i=1\rrbracket}\right]=0.8$ and $\mathbb{E}_{P_{\mu}}\left[\frac{\sum_i^{n-1} \llbracket \RV{X}_i=1\And \RV{D}_i=0\rrbracket}{\sum_i^{n-1} \llbracket \RV{D}_i=0\rrbracket}\right]=0.2$.
+\end{example}
+
+If Geoff were to assume that the sequence $(\RV{X},\RV{D})_n$ represented independent and identically distributed samples from $P_{e}(\RV{X}_e,\RV{D}_e)$ then he could conclude (if $n$ were large) that $P_{e}(\RV{X}_e=1|\RV{D}_e=1)=0.8$ and $P_{e}(\RV{X}_e=1|\RV{D}_e=0)=0.2$. Using evidential decision theory would then recommend that he avoid the doctor. Assuming that the $(\RV{X},\RV{D})_n$ are IID and distributed according to $P_{e}(\RV{X}_e,\RV{D}_e)$ is not justified. In particular, our description of Geoff's decision process implies that $\RV{D}_e$ depends on $(\RV{X},\RV{D})_n$. Even if the sequence $(\RV{X},\RV{D})_n$ were IID (that is, $P_{\mu}(\RV{X}_n,\RV{D}_n) = \prod_{i=0}^{n-1} P_{\mu}(\RV{X}_i,\RV{D}_i)$), the dependency identified above leaves no reason in general to expect that $P_{e}(\RV{X}_e|\RV{D}_e)=P_{\mu}(\RV{X}_0|\RV{D}_0)$.
+
+Causal decision theory (CDT) is held by some to be a superior approach to this kind of problem\cite{lewis_causal_1981}. Causal decision theory introduces the idea of a dependency hypothesis $K:D\to \Delta(X)$ which should be interepreted as representing the ``causal effect'' of $D$ on $X$. CDT prescribes that a decision $d^*$ be chosen such that
+\begin{align}
+    d^* \in \argmin_{d\in D} \mathbb{E}_{K(X|d)}[l(d,\RV{X})]
+\end{align}
+
+
+Just as evidential decision theory is somewhat vague about how the distribution $P_{e}(\RV{X}_e,\RV{D}_e)$ should be determined, causal decision theory is vague as to how the dependency hypotheses $K$ should be determined.
+
+Like the doctor visit, Newcomb's problem is claimed to be a counterexample to evidential decision theory. However, while it's clear that the naive strategy of assuming $(\RV{X},\RV{D})_n$ are IID according to $P_{e}(\RV{X}_e,\RV{D}_e)$ is inappropriate, no strong consensus exists for which decision is appropriate in Newcomb's problem\cite{noauthor_preliminary_nodate}. 
+
+\begin{example}[Newcomb's problem]
+Suppose we have an decision maker (``DM'') confronted by a machine (``PR'') capable of accurately predicting DM's behaviour. The decision maker ``has good reason to believe'' that whatever decision $\RV{D}$ it takes, any prediction $\RV{T}$ made by the predictor is correct with probability $1-1e(-10)$ i.e. we suppose $P_e(\RV{T}=\RV{D})=1-1e(-10)$. PR presents DM with two boxes, and offers the choice to take either the first box ($\RV{D}=1$) or both boxes ($\RV{D}=2$). Earlier, PR has made its prediction $\RV{T}C$ and, if it believed DM would choose to take just the first box ($\RV{D}=1$), then it has filled the first box with \$1 000 000 and the second with \$1. If it believed DM had chosen to take both boxes ($\RV{D}=2$) then it will have left the first box empty but kept \$1 in the second box. For simplicity's sake, we suppose that DM can only make deterministic decisions.
+
+The following table gives payoff $\RV{Y}$, which we suppose is deterministic given $\RV{T}$ and $\RV{D}$:
+\begin{table}[h]
+    \centering
+    \begin{tabular}{c|c|c}
+            & \RV{T}=1 & \RV{T}=2  \\
+            \hline
+        \RV{D}=1 & \$1e6  & \$0 \\
+        \RV{D}=2 & \$1e6+1& \$1
+    \end{tabular}
+    \caption{Newcomb's problem payoff}
+    \label{tab:newcombs_problem}
+\end{table}
+
+The agent wants to make a choice $d^*$ such that $d^*\in \argmax_{d\in D} \mathbb{E}_{M}[\RV{Y}|\RV{D}=d]$ where $M$ is standing in for either the probability distribution $P_{YD}$ or some dependency hypothesis $K:D\to \Delta(T)$. \
+
+Suppose that the probability distribution $P_e(\RV{Y}|\RV{D}=d)=\sum_{t\in T}P_e(\RV{Y}|\RV{T}=t,\RV{D}=d)P_e(\RV{T}=t|\RV{D}=d)$. We can straightforwardly show that $\mathbb{E}_{P_\mu}[\RV{Y}|\RV{D}=2]\leq 1 + 1e-4$ and $\mathbb{E}_{P_e}[\RV{Y}|\RV{D}=1]= 1e6-1e-4$. This recommends 1-boxing.
+
+On the other hand, if we adopt any dependency hypothesis such that $K(\RV{T}|0)=K(\RV{T}|1)$, then $\mathbb{E}_K[\RV{Y}|\RV{D}=2]=\mathbb{E}_K[\RV{Y}|\RV{D}=1]+1$. This recommends 2-boxing.
+
+The problem is more compelling given a natural language argument for each option:
+\begin{enumerate}
+    \item \textbf{One box gets more money:} If the agent chooses $\RV{D}=2$, the predictor will most likely have predicted it will do this, and so the agent most likely takes away \$1. If the agent chooses $\RV{D}=1$, the predictor will most likely have predicted this, and so the agent most likely takes away \$1 000 000.
+    \item \textbf{Two box is the dominant strategy:} If the predictor has predicted the agent will choose $\RV{D}=1$, it will have filled both boxes, and the agent would be better off taking both. Also, if the predictor has predicted the agent will choose $\RV{D}=2$, it will have filled only the second box, and the agent will be better off taking both.
+\end{enumerate}
+\end{example}
+
+The arbitrariness of $K$ and $P_e(\RV{Y}|\RV{D})$ is not usually a central focus of literature on this problem, but it has been noted. In fact, arguments have been made that the appropriate probability distribution $P_{YD}(\RV{Y}|\RV{D})$ recommends 2-boxing \cite{jeffrey_logic_1981} and others that the appropriate dependency hypothesis $K$ recommends 1-boxing \cite{horgan_counterfactuals_1981}.
+
+Despite the vagueness of $K$ and $P_e(\RV{Y}|\RV{D})$, both causal and evidential decision theory fit into the same ``skeleton'' of a decision theory. Define a \emph{consequence kernel} as a Markov kernel of the following type:
+
+\begin{definition}[Consequence kernel]\label{def:depend_hypoth}
+For some set of decisions $D$ and measurable set of outcomes $X$, a consequence kernel is a Markov kernel $\kappa:D\to \Delta(X)$.
+\end{definition}
+
+Both causal and evidential decision theory recommend that, given some consequence kernel $\kappa:D\to \Delta(X)$ and pointwise loss $l:X\times D\to\mathbb{R}$, we should choose a decision $d^*\in D$ such that 
+\begin{align}
+    d^* \in \argmin_{d\in D} \mathbb{E}_{\kappa(X|d)}[l(d,\RV{X})] 
+\end{align}
+
+All that has been done here is to rename dependency hypothesis to consequence kernel. The point of doing this is to stress that, for now, a consequence kernel is simply an object of the type given in definition \ref{def:depend_hypoth} without making formal or informal commitments to how it should be determined. We are in need of some principles by which we can decide on consequence kernels on the basis of data.
+
+The decision theory sketched out here is likely to be less general than we ultimately want. For example, we might want to deal with decision functions rather than atomic decisions, generalised losses that can't be expressed as an expectation or sequential decision problems. It is intended to be a simple but general-enough theory to guide our search through the causal inference literature.

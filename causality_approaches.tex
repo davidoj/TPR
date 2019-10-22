@@ -1,0 +1,322 @@
+%! TEX root = main.tex
+
+\subsection{Approaches to Causality}
+
+In section \ref{ssec:CDT}, the conditional map $P_\mu(\RV{X},\RV{D})$ and the dependency hypothesis $K:D\to\Delta(X)$ were introduced. While these quantities are of primary importance in evidential and causal decision theory respectively, it is was clear what exactly they represented or how we should go about estimating them. There are a variety of approaches to causality that can be made to answer these questions. 
+
+\subsubsection{Other fields dealing with consequences}
+
+\subsubsubsection{Control Engineering}
+
+Control engineering in its simplest form treats consequences as an element of prior knowledge about a system's operation. A discrete linear time invariant control system is governed by two state equations \cite{ogata_discrete-time_1995,nise_control_2010}:
+
+\begin{align}
+    \mathbf{x}_{t+1} &= A\mathbf{x}_t + B\mathbf{u}_t\\
+    \mathbf{y}_{t+1} &= C\mathbf{x}_t + D\mathbf{u}_t
+\end{align}
+
+Where 
+\begin{itemize}
+    \item $t\in \mathbb{N}$ is the time index
+    \item $\mathbf{x}_t \in \mathbb{R}^n$ is the state vector
+    \item $\mathbf{u}_t \in \mathbb{R}^m$ is the control vector
+    \item $\mathbf{y}_t \in \mathbb{R}^p$ is the output vector
+    \item $A\in \mathbb{R}^{2n}$ is the system matrix
+    \item $B\in \mathbb{R}^{n+m}$ is the input matrix
+    \item $C\in \mathbb{R}^{p+n}$ is the output matrix
+    \item $D\in \mathbb{R}^{p+m}$ is the feedforward matrix
+\end{itemize}
+
+The objective of control engineering is often to build a system maintaining $\mathbf{x}$ and/or $\mathbf{y}$ at some target value or in some target range. The cost may involve the time it takes to reach the target range (\emph{transient response}) or the precision with which the values remain in the target range (\emph{steady state error}).
+
+We will suppose for our purposes that the input $\mathbf{u}_t$ is itself given by the following relation:
+\begin{align}
+    \mathbf{u}_t = E\mathbf{x}_t + \mathbf{v}
+\end{align}
+
+Suppose that $A, B, C, D$ are known and $E$ and $\mathbf{v}$ are under our control. We can liken the control matrix $E$ to a decision function. Because the dynamics are given by known matrices $A,B,C$ and $D$, we can have control actions that depend only on the instantaneous value of $\mathbf{x}_t$ rather than the full history $\{\mathbf{x}_i|i\leq t\}$ as in a statistical decision problem.
+
+Causal decision theory considers the ``instantaneous consequences'' of a particular decision $d$. In the control system above, this would correspond to setting $\mathbf{u}_t=$ to a particular value and considering the consequence on $\mathbf{x}_{t+1}$ and $\mathbf{y}_{t+1}$. In control engineering this is not of particular interest because the objectives are defined in terms of sequences of state or output values. In general all states $\mathbf{x}_k$ will depend on the ``decision function'' $E$. Control systems therefore demand treatment of the full sequence of states, decisions and consequences.
+
+The system discussed here is simplified in a number of ways - we have assumed that the dynamics are linear, the matrices $A,B,C,D$ are fixed and known precisely, and that there is no noise in the measurement of $\mathbf{x}_t$ or $\mathbf{y}_t$ or in the input $\mathbf{u}_t$. In addition, control systems are typically considered to have continuous rather than discrete dynamics. Control theory is a deep and broad field, and work exists relaxing all of the listed assumptions \cite{stengel_stochastic_1986,kokotovic_foundations_1991}. 
+
+\subsubsubsection{Reinforcement Learning}
+
+Reinforcement learning deals with sequential decision problems with a focus on situations where state dynamics are stochastic and unknown. There are many connections between reinforcement learning and control engineering.
+
+A reinforcement learning problem poses a set $X$ of states, $D$ of decisions and $R$ of rewards. An \emph{agent} and an \emph{environment} interact to generate a sequence of random variables $(\RV{X}_T,\RV{D}_T,\RV{R}_T)=\{(\RV{X}_t, \RV{D}_t, \RV{R}_t)|t\in\{0,..,T\}\}$. The agent and environment serve to separate what we can control (the agent) from what we cannot (the environment). 
+
+A Markov Decision Process (MDP) posits an environment with an initial state probability $P_\mu(\RV{X}_0)$ and transition kernel $\mathcal{T}:X\times D\to \Delta(X\times R)$. The agent has a policy kernel $\pi_t:X^t\to \Delta(D)$ for each $t\in T$. Write $\pi_T$ for the collection of kernels $\{\pi_t|t\in T\}$. The distribution $P^{\pi_T}_\mu$ is given by
+\begin{align}
+    P^{\pi_T}_\mu(\RV{X}_T,\RV{D}_T,\RV{R}_T)=P_\mu(\RV{X}_0,\RV{R}_0)\prod_{i=0}^T \pi_i(\RV{D}_i|\RV{X}_{0:i})\mathcal{T}(\RV{X}_{i+1},\RV{R}_{i+1}|\RV{D}_i,\RV{X}_i) \label{eq:MDP}
+\end{align}
+
+Where $X_{0:i}=\{X_k|k\in\{0,..,i\}\}$. To recap, an MDP is a tuple $\langle X,A,R,P_{X_0},\mathcal{T}\rangle$ which, along with a collection of policy kernels $\pi_T$ generates the distribution over random variables $(\RV{X}_T,\RV{D}_T,\RV{R}_T)$ in Equation \ref{eq:MDP}.
+
+The objective is typically a time-discounted sum of rewards termed the \emph{return}. With $0\leq \gamma \leq 1$:
+\begin{align}
+    G(\pi_T) = \sum_{i=0}^T \gamma^i \mathbb{E}_{P^{\pi_T}_{X_TD_TR_T}}[\RV{R}_i]
+\end{align}
+
+The return can be related to a loss termed the \emph{regret}:
+\begin{align}
+    L(\pi_T) = G(\pi^*_T) - G(\pi_T)
+\end{align}
+
+Where $\pi^*_T=\argmax_{\pi'_T}G(\pi'_T)$ \cite{barto_reinforcement_1998}.
+
+The transition kernel can be likened to the matrices $A$, $B$, $C$ and $D$ in control engineering, though here the transitions are stochastic, while the policy kernel can be likened to the matrix $E$.. As in control engineering, we are interested in the effect of a policy kernel on the full sequence of states, actions and rewards. As in statistical decision problems, the decision kernel $\pi_t$ in general depends on the entire history $\RV{X}_{0:t}$. In fact, this correspondence is even closer with the original definition of a statistical decision problem given by Wald, which allows for interleaved instances of data collection and decisions to continue or terminate experimentation\cite{wald1950statistical}.
+
+An MDP assumes that the state is known with certainty at each iteration. The partially observable Markov decision process (POMDP) does away with this assumption. POMDP's add an additional space of observations $O$ and an additional observation kernel $\phi:X\to\delta(O)$. The policy kernels $\pi_t$ depend on $O$ rather than $X$, yielding the probability distribution\cite{jaakkola_reinforcement_1994,monahan_state_1982}:
+\begin{align}
+        P^{\pi_T}_\mu(\RV{X}_T,\RV{D}_T,\RV{R}_T,\RV{O}_T)=P_\mu(\RV{X}_0,\RV{R}_0)\prod_{i=0}^T \phi(\RV{O}_i|\RV{X}_i) \pi_i(\RV{D}_i|\RV{O}_{0:i})\mathcal{T}(\RV{X}_{i+1},\RV{R}_{i+1}|\RV{D}_i,\RV{X}_i)
+\end{align}
+
+Both MDPs or POMDPs have, for all policy sequences $\pi_T$,
+\begin{align}
+    P^{\pi_T}_\mu(\RV{X}_{t+1},\RV{R}_{t+1}|\RV{D}_{0:t},\RV{X}_{0:t}) = \mathcal{T}(\RV{X}_{t+1},\RV{R}_{t+1}|\RV{D}_t,\RV{X}_t)
+\end{align}
+
+In general for a POMDP we have:
+\begin{align}
+    P^{\pi_T}_\mu(\RV{X}_{t+1},\RV{R}_{t+1}|\RV{D}_{0:t},\RV{O}_{0:t}) \neq P^{\pi_T}_\mu(\RV{X}_{t+1},\RV{R}_{t+1}|\RV{D}_t,\RV{O}_t)
+\end{align}
+
+Recall the example of visiting the doctor (Example \ref{ex:doctor}), where we noted that the IID assumption was inappropriate. We will observe that a very similar problem can be formulated more appropriately as an MDP. 
+
+\begin{example}[Visiting the doctor MDP]
+Geoff is developing a strategy for deciding whether or not to visit the doctor for the next $N$ days, $\pi_N$. His available decisions are $D=\{0,1\}$ (avoid the doctor, see the doctor respectively), and the outcomes he is interested in are $X=R=\{0,1\}$ (sick, not sick respectively).  He would prefer not to be sick, which corresponds to $\RV{R}=1$. On day $i$, he notes his decisions on the previous days $\RV{D}_{0:i-1}$ and his states of sickness up to the present day $\RV{X}_{0:i}$. On the basis of this, he chooses an action $\RV{D}_i$ via his policy $\pi_i$.
+
+Assuming an environmental distribution $P_\mu(\RV{X}_0)$ and transition kernel $\mathcal{T}(\RV{X}_{i+1}|\RV{X}_i,\RV{D}_i)$, this problem forms an MDP $\langle X, R, A, P_\mu, \mathcal{T}\rangle$.
+\end{example}
+
+We will not discuss the solution of MDPs here, but we will note that this formulation appears to be more sound than the IID assumption made in Example \ref{ex:doctor}. The problem presented here is not precisely analogous, however. The earlier version presumed only the final decision $\RV{D}_n$ was under Geoff's control while in this case we are considering the entire policy sequence $\pi_N$ to be under his control. This adds a type of uncertianty not accounted for in either MDPs or POMDPs - for every decision prior to $\RV{D}_n$, we do not know why this decision was made. It may be the case that at the time Geoff made these decisions with information that is not currently available - the POMDP scheme does not cover this possibility, as it permits the transition kernel to depend on hidden states, but it does not permit the policy kernel to have such dependences. Of course, the earlier version is also simpler in that it is a non-sequential problem.
+
+\subsubsection{Causal Graphical Models}
+
+Causal graphical models posit that directed relationships are the fundamental units of causal reasoning. We call these relationships \emph{dependence relationships} (they might also be called cause-effect relationships). Recall that in the discussion of control engineering, we posited that the state vector dynamics were given by
+\begin{align}
+        \mathbf{x}_{t+1} &= A\mathbf{x}_t + B\mathbf{u}_t \label{eq:ce_state}
+\end{align}
+
+While the relationship of equality is symmetric and does not privilege the left or the right hand side of Equation \ref{eq:ce_state}, it is far more natural to interpret this equation as expressing the fact that $\mathbf{x}_{t+1}$ depends on $\mathbf{x}_t$ and $\mathbf{u}_t$ than, say, that $\mathbf{u}_t$ depends on $\mathbf{x}_{t+1}$ and $\mathbf{x}_t$. Similarly, while the distribution expressed in Equation \ref{eq:MDP} could be rewritten with a different factorisation in which the quantity $\mathcal{T}(\RV{X}_{i+1},\RV{R}_{i+1}|\RV{D}_i,\RV{X}_i)$ does not appear, it is very natural to think of the subsequent state and reward depending on the preceding state and action, and awkward to imagine other dependence relationships.
+
+Causal graphical models formalise dependence relationships such as these. The theory of graphical models provides tools for reasoning explicitly about dependence relationships and deriving consequences from them. Given a probability distribution $P_\mu(\RV{V})$ where $\RV{V}=\{V_i|i\in \{0,..,n\}\}$, a causal graphical model defines a set of ``interventional distributions'' $\mathbf{P}_*$ where $P_{\mathcal{G}}(\RV{V}|do(V_i=v))\in \textbf{P}_*$ is of the type $V_i\to \Delta(V)$. If the set of decisions available can be identified with some variable $V_i$, then a graphical causal model provides exactly what we're after - a map from a probability distribution $P_\mu$ to a consequence kernel.
+
+An argument made in favour of the structural approach is that humans can more reliably deduce probabilistic independences from dependence relationships than they can by reasoning directly about a probability distribution. Even when not using graphical models, we commonly use language that implies directed relationships: consider that ``$A$ depends on $B$'' appears to refer relationship of the form $B\to A$, while the probabilistic notion $A\not\CI B$ expresses an undirected relationship\cite{pearl_causality:_2009}. 
+
+Cartwright has offered the opinion that the graphical model approach isn't wholly successful in the project of formalising causal reasoning\cite{cartwright_causation:_2004}. Criticisms of graphical models include:
+\begin{itemize}
+    \item A graphical causal model must either arbitrarily exclude causes at some point, or include ``the entire universe''. The conditions under which graphical models permit simplification are restrictive\cite{rubenstein_causal_2017}, so it is not clear why we can often make do with the simple models that we actually use in practice
+    \item Graphical causal models cannot handle a dense set of effects such as in a timeseries (for example, a control system with continuous evolution)
+\end{itemize}
+
+Further criticism of the structural approach points out that two sets of variables are rarely ``truly'' independent, either unconditionally or conditional on some third set of variables. Furthermore, not every set of variables admits an acyclic set of causal relationships \cite{gelman_causality_2011}.
+
+\subsubsubsection{Causal Bayesian Network}
+
+There are many variants of graphical causal models, and Causal Bayesian networks (CBNs) are one of the more basic types.
+
+\begin{definition}[Causal Bayesian Network]\label{def:CBN}
+The definition here follows Pearl \cite{pearl_causality:_2009}.
+
+Consider a directed acyclic graph $\mathcal{G}$ with edges $\mathbf{V}=\{V_i|i\in \{0,..,N\}\}$, a probability space $(\Omega,\mathcal{F},\mu)$ and a set of measurable functions $\RV{V}:\Omega\to V$ where $\RV{V}=(\RV{V}_i|i\in N)$ and $V=\times_{i=0}^N V_i$. For $s\subset \{0,..N\}$, define $\RV{V}_s=(\RV{V}_i|i\in s)$ and $\mathbf{V}_s=\{V_i|i\in s\}$. For each $s\subset \{0,..,N\}$, suppose there is a Markov kernel $K_s:\times_{i\in s}V_i\to \Delta (V)$  which we will write $P_V(\RV{V}|do(\RV{V}_s=v))$. Define the set of \emph{interventional distributions} $\mathbf{P}_*=\{P_V(\RV{V}|do(\RV{V}_i=v))|i\in \{0,..,N\}\}$. Finally, let the push-forward distribution of $\mu$ be (as usual) $P_V(\RV{V})$.
+
+The graph $\mathcal{G}$ is a causal Bayesian network compatible with $\mathbf{P}_*$ iff
+\begin{enumerate}
+    \item $P_V(\RV{V}|do(V_s=v))$ is compatible with $\mathcal{G}$ for all $s\subset \{0,..,N\}$
+    \item $P_V(\RV{V}_s|do(V_s=v))=\llbracket \RV{V}_s=v \rrbracket$
+    \item $P_V(\RV{V}_i|\PA{\mathcal{G}}{\RV{V}_i}=p,do(V_s=v))=P_V(\RV{V}_i|\PA{\mathcal{G}}{\RV{V}_i}=p)$ for all $i\not\in  s$ if $\PA{\mathcal{G}}{\RV{V}_i}=p\implies \RV{V}_s=v$ or $\RV{V}_s\cap \PA{\mathcal{G}}{\RV{V}_i}=\emptyset$ (Pearl terms this ``whenever $\PA{\mathcal{G}}{\RV{V}_i}=p$ is compatible with $V_s=v$).
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Truncated factorisation]
+The set of distributions $\mathbf{P}_*$ obeys truncated factorisation relative to the graph $\mathcal{G}$ if, for every $i\in N$, the distribution $P_V(\RV{V}|do(V_i=v))$ can be written as follows:
+\begin{align}
+    P_V(\RV{V}|do(V_s=v)) = \llbracket V_s=v\rrbracket \prod_{j\not\in s}^N P_V(\RV{V}_j|\PA{\mathcal{G}}{\RV{V}_j}) \label{eq:trunc_fact}
+\end{align}
+\end{definition}
+
+Pearl has shown that if $\mathcal{G}$ is a CBN compatible with $\mathbf{P}_*$ then $\mathbf{P}_*$ obeys truncated factorisation \cite{pearl_causality:_2009}.
+
+Given some subset $\RV{V}_s\subset V$, we identify the decision space $D$ with $V_s=\prod_{i\in s} V_i$ and the consequence kernel $\kappa:V_s\to \Delta(V)$ such that $\kappa:v\mapsto P_V(\RV{V}|do(V_s=v))$.
+
+While the definition of a CBN begins with the assumption of a set of interventional distributions $\mathbf{P}_*$, inference typically proceeds in the opposite direction. Given a probability distribution $P_V(\RV{V})$ and a CBN $\mathcal{G}$, it is possible to compute the consequence kernel via Equation \ref{eq:trunc_fact}. There is an element of circularity here: the CBN is defined with respect to the set of interventional distributions, but the interventional distributions themselves are calculated from the CBN. This will be discussed in more detail in section \ref{sec:discovery} on causal discovery.
+
+Recalling Vapnik's advice to avoid solving a more general problem on the way to solving a given problem, the definition of a causal Bayesian network is tremendously uneconomical. It is very rare that the full set of interventional distributions will be sought. 
+
+\subsubsection{Example: Stateless Markov Decision Process (graphical models)}\label{sec:smdp_graph}
+
+The example of a stateless Markov Decision Process (often called a multi-armed bandit) is presented here to illustrate the use of causal Bayesian networks.
+
+Consider an MDP $\langle \{1\},A,R,\mathcal{T}\rangle$, where the state is the singleton $\{1\}$. In this case we can write $\mathcal{T}:A\to \Delta(R)$. Suppose also that the policy $\pi:\{1\}\to \Delta(A)$ is constant (this is simplifying but not strictly necessary). These assumptions imply that the sequence $\{(\RV{A}_i,\RV{R}_i)|i\in \mathbb{N}\}$ are IID. Write $P_\mu(\RV{A}_i,\RV{R}_i)=P_\mu(\RV{A},\RV{R})$ for all $i\in \mathbb{N}$. We can then formulate the dependency relationships represented by $\mathcal{T}$ and $\pi$ in a simple graphical model $\mathcal{G}$ (Figure \ref{fig:stateless_mdp}).
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[-latex ,auto ,node distance =1 cm and 2cm ,on grid ,
+    semithick ,
+    variable/.style ={ circle ,top color =white , 
+    draw , text=blue , minimum width =1 cm},
+    kernel/.style={rectangle,draw}
+    ]
+    \node (O) {$1$};
+    \node (A) [right = of O] {$A$};
+    \node (R) [right = of A] {$R$};
+    \draw (O) -- (A);
+    \draw (A) -- (R);
+    \end{tikzpicture}
+
+    \caption{Causal structure for a stateless MDP}
+    \label{fig:stateless_mdp}
+\end{figure}
+
+We identify the set of decisions $D$ with $A$, and we seek the consequence kernel $\kappa:a\mapsto P_{\mathcal{G}}(\RV{A},\RV{R}|do(A=a))$. By $\mathcal{G}$ and equation \ref{eq:trunc_fact}, we have
+
+\begin{align}
+    P_{\mathcal{G}}(\RV{R},\RV{A}|do(A=a)) = \llbracket A=a\rrbracket P_\mu(\RV{R}|\RV{A})
+\end{align}
+
+Suppose that the objective is to maximise $\mathbb{E}_{\kappa(\RV{A},\RV{R}|a)}[\RV{R}]$. Then this can be achieved by choosing $a^*$ such that $a^*\in \argmax_{a\in A} P_\mu(\RV{R}|\RV{A})$. This agrees with the standard recommendation for multi-armed bandits\cite{barto_reinforcement_1998}.
+
+\subsubsubsection{Variants of Graphical Models}
+
+Structural equation models are closely related to causal Bayesian networks. Given some $N\subset \mathbb{N}$, a \emph{structural equation model} or \emph{structural causal model} on a set of variables $V=\{V_i|i\in N\}$ is a collection of equations $M$ of the form:
+\begin{align}
+    V_i:= f_i(\PA{M}{V_i},\epsilon_i)\qquad V_i\in V, \PA{M}{V_i}\subset V
+\end{align}
+
+Where $\epsilon = \{\epsilon_i|i\in N\}$ is a random variable distributed according to $P_\mu(\epsilon)$, with each $\epsilon_i$ called a noise. Structural equation models are subject to a wide variety of assumptions. Noises may be held to be jointly independent\cite{pearl_causality:_2009,wright1921correlation,haavelmo1943statistical}, or dependent\cite{rubenstein_causal_2017,heckman_structural_2005}. As with causal graphs, structural equation models are typically acyclic, but examples exist of cyclic structural equation models\cite{bongers_theoretical_2016,itani2010structure}. Finally, while the structural equation models of interest here encode assumptions about the causal structure of a data generating process, sometimes the term structural equation modelling is used to refer to a family of statistical techniques for estimating quantities in sets of simultaneous equations without particular attention to the question of whether or not such equations embody causal assumptions\cite{chin_commentary:_1998}.
+
+We can relate structural equation models to causal Bayesian networks via \emph{causal mechanisms}. Causal mechanisms are a generalisation of what are called \emph{autonomous data generating processes} in \cite{bareinboim_local_2012}.
+
+\begin{definition}[Causal Mechanism]
+Given a countable set $V=\{V_i|i\in \mathbb{N}\}$, a \emph{causal mechamism} is an object in $\mathscr{P}(V)\times V$. A causal mechanism $(\PA{}{V},V_i)$ identifies the set $\PA{}{V_i}$ as the \emph{causes} of $V_i$ and $V_i$ as an effect of the elements of $\PA{}{V_i}$.
+\end{definition}
+
+\begin{definition}[Causal Mechanisms of a Causal Bayesian Network]
+Given a causal Bayesian network $\mathcal{G}=(\mathbf{V},\mathbf{E})$, the causal mechanisms are the set $\{(\PA{\mathcal{G}}{V_i},V_i)|V_i\in V\}$.
+\end{definition}
+
+\begin{definition}[Causal Mechanisms of a Structural Equation Model]
+Given a structural equation $V_i := f_{i}(\PA{}{V_i},\epsilon_i)$, we call the pair $(\PA{}{V_i},V_i)$ the associated causal mechanism. The causal mechanisms of the structural equation model $\{V_i:= f_{i}(\PA{}{V_i},\epsilon_i)| V_i\in V, \PA{}{V_i}\subset V\}$ are the associated causal mechanisms of every structural equation.
+\end{definition}
+
+\begin{definition}[Induced Graph]
+The induced graph of a structural equation model $M=\{V_i:= f_{V_i}(\PA{M}{V_i},\epsilon_i)| V_i\in V, V_S\subset V\}$ is the graph $\mathcal{G}$ such that the causal mechanism of $\mathcal{G}$ and the causal mechanisms of $M$ are the same.
+\end{definition}
+
+Given an SEM $M$, the joint distribution of noises $P_\mu(\epsilon)$ generates a joint probability distribution on the variables $P_\mu(V)$. In the case where $M$ is acyclic and the noises are jointly independent, the joint probability distribution generated by $M$ is compatible with the graph $\mathcal{G}$ induced by $M$ (i.e. the probability distribution respects the conditional independences implied by the d-separation properties of $\mathcal{G}$)\cite{pearl_causality:_2009}.
+
+To relate SEMs to CBNs, we define the replace operation:
+
+\begin{definition}[Replace operation]
+Given variables $V$ with $V_i\in V$ and $\PA{E}{V_i}\subset V$, a structural equation $E_k=(V_k:=g_k(\PA{E}{V_k},\epsilon_i))$ and a structural equation model $M=\{V_i:=f_i(\PA{M}{V_i},\epsilon_i)|V_i\in V, \PA{M}{V_i}\subset V\}$, the replace operation $r$ is the map $r(M,E_k):M\mapsto \{V_i:=f_i(\PA{M}{V_i},\epsilon_i)|V_i\in V\setminus\{V_k\}\}\cup\{E_k\}$.
+\end{definition}
+
+Define the structural equation $\delta_i(v)=(V_i:=v)$. The set of interventional distributions $\mathbf{P}^M_*=\{r(M,\delta_i(v))|i\in N\}$ is compatible with the causal Bayesian network $\mathcal{G}$ induced by $M$\cite{pearl_causality:_2009}.
+
+A further variant on the definition of graphical causal models is to represent the causal mechanisms by Markov kernels or stochastic maps rather than structural equations \cite{eaton_exact_2007,fong_causal_2013}. In addition, Fong defines the causal theory associated with a graph $\mathcal{G}$ as a strictly symmetric monoidal category $\mathcal{C}_G$ where the causal mechanisms are morphisms $\PA{\mathcal{G}}{v}\to v$\cite{fong_causal_2013}.
+
+Equivalence classes of causal Bayesian networks have been characterised for limited sets of interventions\cite{hauser_characterization_2012,mooij_joint_2016}, for soft interventions that change a causal mechanism rather than fixing the effect to a constant\cite{yang_characterizing_2018} and for sets of interventions with uncertain targets\cite{eaton_exact_2007}.
+
+\emph{Influence diagrams} are directed acyclic graphs with different types of nodes that distinguish between intervention parameters and ordinary variables. Influence diagrams can model \emph{extended conditional independences} (relations patterned after conditional independences involving intervention parameters rather than regular variables) with the usual d-separation semantics of an ordinary DAG\cite{dawid_beware_2010,dawid_influence_2002}.
+
+There are a number of characterisations of probability distributions compatible with DAGs with hidden variables, termed \emph{marginal models}. Nested Markov models, graphically represented by marginal DAGs, have been shown to fully characterise the equality constraints of a marginal model, including constraints which are not conditional independence\cite{evans_margins_2015,kang_inequality_2012}.
+
+\subsubsection{Potential Outcomes}
+
+The potential outcomes school offers an alternative account of causal effects. H\'ernan and Robins offer the following definition of potential outcomes\cite{hernan_causal_2018}:
+
+\begin{quote}
+    We refer to variables such as $A$ and $Y$ that may have different values for different individuals as \emph{random variables}. Let $Y^{a=1}$ [...] be the outcome variable that would have been observed under the treatment value $a=1$ and $Y^{a=0}$ [...] be the treatment value that would have been observed under the treatment value $a=0$. $Y^{a=1}$ and $Y^{a=0}$ are also random variables.
+\end{quote}
+
+The assertion that the variables $Y$ stand for the outcomes of different individuals is notable. As pointed out in Section \ref{sec:decision_theory}, the problem of interindividual comparison is not addressed by VNM decision theory.
+
+Formalising the notion of ``random variable'' presented here is nontrivial. On the basis of this and other definitions \cite{angrist_mastering_2014,rubin_causal_2005}, the following tentative definition of a potential outcome is offered:
+
+\begin{definition}[Potential outcome]
+Given a discrete probability space $(\Omega, \mathcal{F},\mu)$, measurable spaces $(A,\mathcal{A})$, $(Y,\mathcal{Y})$ and random variables $\RV{A}:\Omega\to A$ and $\RV{Y}:\Omega\to Y$, a $(Y,A,x)$-potential outcome is a random variable $\RV{Y}^{A=x}:\Omega\to Y$ such that, for any $\omega_a\in \RV{A}^{-1}(x)$, $\RV{Y}(\omega_a)=\RV{Y}^{A=x}(\omega_a)$.
+\end{definition}
+
+Note that under this definition $\RV{Y}$ is always a $(Y,A,x)$-potential outcome for any $x\in A$, though in general there will be many others. This definition appears similar to the condition of \emph{consistency} defined in \cite{hernan_does_2008}, which would suggest that an inconsistent potential outcome would simply be any random variable $Y^\cdot:\Omega \to Y$. Alternative accounts call potential outcomes unobserved constants rather than random variables\cite{angrist_identification_1996}.
+
+The definition given above implies
+\[P_{\mu}(\RV{Y}=y,\RV{Y}^{A=x}=y_{Ax}|\RV{A}=x) = \llbracket y=y_{Ax} \rrbracket P_\mu(\RV{Y}=y|\RV{A}=x)\]
+That is, $\RV{Y}$ and $\RV{Y}^{A=x}$ agree conditional on $A=x$.
+
+A partial translation between potential outcomes and graphical models is possible by assuming that a given potential outcome $\RV{X}^{A=a}$ corresponds to a graph $\mathcal{G}$ such that $P_\mu(\RV{X}^{A=a})=P_{\mathcal{G}}(\RV{X}|do(A=a))$. A full translation requires substantial effort in constructing a graph capable of representing queries posed in the potential outcomes notation\cite{shpitser_complete_2008}.
+
+\subsubsubsection{Treatment Effects}\label{sec:treatment_effect}
+
+Given potential outcomes $\RV{Y}^{A=1}$ and $\RV{Y}^{A=0}$, the treatment effect (relative to these potential outcomes) is defined as 
+\begin{align}
+    \RV{T} = \RV{Y}^{A=1} - \RV{Y}^{A=0}
+\end{align}
+
+The treatment effect is considered to be the variable of relevance to decision making. The notion of a treatment effect doesn't fit precisely with our approach to developing a causal decision theory. If we identify the decision space $D$ with the set $A$ and the space $X$ with the outcomes $Y$, our approach is define a pointwise loss $l:Y\times A\to \mathbb{R}$ and associate a decision $a$ with a distribution on $Y$ via a consequence kernel. We then seek a decision that minimises the expected loss under this kernel. The treatment effect is neither a pointwise loss nor a consequence kernel. In fact, it is possible to define decision rules via the treatment effect that cannot be defined with consequence karnels. for a very simple example, any decision rule involving $\text{Var}[\RV{T}]$ depends on a property of the joint distribution $P_{\mu}(\RV{Y}^{A=1}, \RV{Y}^{A=0})$ that cannot be captured by consequence kernels\cite{lattimore_learning_2017}. In practice I am not aware of any proposed decision rules that depend on $\text{Var}[\RV{T}]$.
+
+In practice, researchers are often concerned with determining the average treatment effect (ATE), defined as 
+\begin{align}
+   \text{ATE}=\mathbb{E}[\RV{T}] 
+\end{align}
+If we identify the decision space $D$ with the set $A$, we might guess that the decision rule is: choose $\RV{A}=1$ if $\text{ATE}>k$, otherwise choose $\RV{A}=0$ for some threshold $k\in \mathbb{R}$. This decision rule can be matched by the consequence kernel $\kappa:a\mapsto P_{\mu}[\RV{Y}^{A=a}]$ and the loss $l(a,y)=ka - y$. To see this, note that $\mathbb{E}_{\kappa(Y|0)}[l(0,\RV{Y})] = -\mathbb{E}[\RV{Y}^{A=0}]$ and $\mathbb{E}_{\kappa(Y|1)}[l(1,\RV{Y})] = k-\mathbb{E}[\RV{Y}^{A=1}]$.
+
+
+The potential outcomes literature develops a number of other treatment effects, conditions under which they can be estimated and techniques to estimators the quantities \cite{carneiro_evaluating_2010,imbens_identification_1994,angrist_identification_1996}. Parts of this literature have been criticised for focusing too much on what can be estimated over what is relevant to making decisions\cite{heckman_policy-relevant_2001}. 
+
+It is illustrative to consider two additional treatment effects and attempt to translate their implied decision rules to a causal decision theory. We will consider the intention to treat (ITT) effect and the effect of treatment on the treated (ETT). Here we identify the decision space $D$ with the binary ``treatment assignment'' $Z=\{0,1\}$ and the space $X=A\times Y$ is the product of the binary ``treatment received'' ($A$) and the binary outcome ($Y$). 
+
+Define the intention to treat effect
+
+\begin{align}
+    \text{ITT} &= \mathbb{E}[\RV{Y}^{Z=1}] - \mathbb{E}[\RV{Y}^{Z=0}]
+\end{align}
+
+Note that this is precisely analogous to the ATE with $Z$ substituted for $A$. For analogous reasons we can say that the decision rule ``choose $\RV{Z}=1$ if $\text{ITT}>k$, otherwise choose $\RV{Z}=0$ for some threshold $k\in \mathbb{R}$'' is matched by the consequence kernel $\kappa:z\mapsto P_{\mu}[\RV{Y}^{A=z}]$ and the loss $l_{I}(z,y)=kz - y$. Note that the loss here penalises the treatment assignment rather than the treatment being taken. This might sometimes be appropriate, but sometimes it isn't - prescribing a medical treatment doesn't itself incur the costs of purchasing the treatement or experiencing side effects - these costs are only incurred if the treatment is actually purchased and taken.
+
+Define the local average treatment effect as \cite{shpitser_effects_2009}
+
+\begin{align}
+    \text{ETT} &= \mathbb{E}[\RV{Y}^{A=1}|A=1] - \mathbb{E}[Y^{A=0}|A=1]
+\end{align}
+
+Decision rules based on the local average treatment effect in general cannot be matched via a consequence kernel and a pointwise loss. A consequence kernel $\kappa$ here maps $Z$ to distributions on $A\times Y$, which has no natural identification with the distributions $P_\mu(\RV{Y}^{A=a},A)$, $a\in A$. Nevertheless, there is a correspondence under some circumstances.
+
+Suppose the decision rule that goes with ETT is: choose $\RV{Z}=1$ if $\text{ETT}>k$ for some threshold $k$, otherwise choose $\RV{Z}=0$.
+
+If we assume for all $a\in A$ that $\mathbb{E}[\RV{Y}^{A=a}|\RV{A}=1]=\mathbb{E}[\RV{Y}^{Z=a}|\RV{A}^{Z=a}=a]$ and $P_\mu(\RV{A}^{Z=1}=1)>P_\mu(\RV{A}^{Z=0}=1)$ then this decision rule is matched by the consequence kernel $\kappa:z\mapsto P_\mu(\RV{Y}^{Z=z},\RV{A}^{Z=z})$ and the loss $l_E(z,a,y)=ka-y$.
+
+\begin{proof}
+\begin{align}
+    l^z_E &:= \mathbb{E}_{\kappa(Y,A|z)}[l(z,\RV{A},\RV{Y})] \\
+    &= k\mathbb{E}[\RV{A}^{Z=z}] - \mathbb{E}[\RV{Y}^{Z=z}]\\
+    &= - P_\mu(A^{Z=z}=0)\mathbb{E}[\RV{Y}^{Z=z}|A^{Z=z}=0] - P_\mu(A^{Z=z}=1)(\mathbb{E}[\RV{Y}^{Z=z}|A^{Z=z}=1]-k)\\
+    &= - P_\mu(A^{Z=z}=0)\mathbb{E}[\RV{Y}^{A=z}|A=1] - P_\mu(A^{Z=z}=1)(\mathbb{E}[\RV{Y}^{A=z}|A=1]-k)
+\end{align}
+
+Now, $\text{ETT}>k\implies \mathbb{E}[\RV{Y}^{A=1}|\RV{A}=1]-k>\mathbb{E}[\RV{Y}^{A=0}|\RV{A}=1]$, which along with the assumption $P_\mu(\RV{A}^{Z=1}=1)>P_\mu(\RV{A}^{Z=0}=1)$ implies $l^1_E < l^2_E$, otherwise the reverse.
+\end{proof}
+
+The effect of treatment on the treated is identifiable only under restricted conditions\cite{angrist_identification_1996,shpitser_effects_2009}. This result raises a conjecture:
+
+\textbf{Conjecture:} Under conditions where the effect of treatment on the treated is identifiable, the implied decision rule corresponds with the consequence kernel above and the loss $l_E$.
+
+The loss proposed here is quite a natural one. Recall that the loss $l_I$ didn't always capture the ``cost of treatment''. In such cases, the loss $l_E$ would appear to do so.
+
+\subsubsubsection{Example: Stateless Markov Decision Process (Potential Outcomes)}\label{sec:smdp_po}
+
+As before, consider an MDP $\langle \{1\},A,R,\mathcal{T}\rangle$, where the state is the singleton $\{1\}$. In this case we can write $\mathcal{T}:A\to \Delta(R)$. Suppose also that the policy $\pi:\{1\}\to \Delta(A)$ is constant (this is simplifying but not strictly necessary). These assumptions imply that the sequence $\{(\RV{A}_i,\RV{R}_i)|i\in \mathbb{N}\}$ are IID. Write $P_\mu(\RV{A}_i,\RV{R}_i):=P_\mu(\RV{A},\RV{R})$ for all $i\in \mathbb{N}$.
+
+Introduce the potential outcomes $\RV{R}^{A=a}$ and suppose they are \emph{ignorable}\cite{rubin_causal_2005}. That is
+\begin{align}
+    \RV{R}^{A=a}\CI_P \RV{A}\qquad\text{for all }a\in A 
+\end{align}
+
+Then $P_\mu(\RV{R}|\RV{A}=a) = P_\mu(\RV{R}^{A=a}|\RV{A}=a) = P_\mu(\RV{R}^{A=a})$. Following the section above, this could motivate the choice of the consequence kernel $\kappa:a\mapsto P_\mu(\RV{R}|\RV{A}=a)$. 
+
+\subsubsection{Comparing graphical models and potential outcomes}
+
+As cognitive aids, structural models and potential outcomes may be complementary. Proponents of the counterfactual approach claim they find counterfactuals to be easier to understand\cite{rubin_authors_2008,hernan_causal_2018}, while proponents of the causal approach claim the opposite \cite{pearl_causality:_2009}.
+
+It is known that the number of sets of conditional independence statements that can be expressed as directed acyclic graphs with $N$ nodes is much smaller than the number of distinct sets of conditional independence statements that can hold for a probability distribution over $N$ variables\cite{matus_conditional_1995}. In addition, there are many restrictions we can place on a class of probability distributions that are not conditional independences. By working directly with a joint probability distribution, the potential outcomes approach may be able to express a wider range of restrictions.

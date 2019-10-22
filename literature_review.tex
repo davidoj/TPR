@@ -1,0 +1,193 @@
+%!TEX root = main.tex
+
+\section{Literature Review}
+
+\subsection{Introduction}
+
+The objective of this thesis is to apply decision theory to the task of statistical causal inference.  This project is underscored by the sentiment expressed by Vapnik\cite{vapnik_nature_2013}:
+
+\begin{quote}
+    When solving a given problem, try to avoid solving a more general problem as an intermediate step.
+\end{quote}
+
+A decision theoretic approach allows a clearer specification of what exactly the problem is.
+
+This literature review begins with an overview of decision theory, statistical decision theory and causal decision theory, where a rough outline of what a statistical causal decision theory might look like is sketched. Major theories of causal inference - graphical models and potential outcomes - are then examined with regard to how they might fill some of the necessary elements of a statistical causal decision theory. Finally an overview of the key problems of causal discovery and effect estimation is presented, as these are deemed important areas of causal inference in relation to a statistical causal decision theory.
+
+A note on terminology: \emph{causal decision theory} is already a technical term in the philosophical literature, and the project here is to connect something like causal decision theory with statistical inference. Hence, statistical causal decision theory.
+
+
+\subsection{Definitions and Notation}
+
+\subsubsection{Probability distributions and random variables}
+
+By convention, if a random variable $\RV{X}$ is posited, it is understood to be on a probability space $(\Omega,\mathcal{F},\mu)$, and we will write the distribution $P_\mu(\RV{X})$. The $do$-intervention involves a transformation of the probability measure $\mu$ that is not defined here. For a causal Bayesian network $\mathcal{G}$, we will write $P_{\mathcal{G}}(\RV{X}|do(Y=y))$. An exception will also be made for evidential decision theory, where distributions will be written $P_e(\RV{X})$ to highlight the fact that this distribution is underspecified.
+
+\begin{definition}[Probability Space]
+A probability space is a triple $(\Omega,\mathcal{F},\mu)$, where $\Omega$ is an arbitrary sample space, $\mathcal{F}$ is a $\sigma$-algebra on $\Omega$ and $\mu:\mathcal{F}\to[0,1]$ satisfies the properties of a measure over $\mathcal{F}$ as well as $P(\Omega)=1$.
+\end{definition}
+
+\begin{definition}[Random variable]\label{def:random_variable}
+Given a probability space $(\Omega,\mathcal{F},\mu)$ and a measurable space $(X,\mathcal{X})$, a random variable is a measurable function $\RV{X}:\Omega\to X$.
+
+We use sans-serif font to identify random variables $\RV{X,A,D}$.
+\end{definition}
+
+\begin{definition}[Push forward measure]
+Given a probability space $(\Omega,\mathcal{F},\mu)$ and a random variable $\RV{X}$ on $(X,\mathcal{X})$, define the probability distribution $P_\mu(\RV{X})$ such that for $B\in \mathcal{X}$, $P_\mu(\RV{X}\in B)=\mu(X^{-1}(B))$.
+
+If the space $X$ is discrete, we may write $P_\mu(\RV{X}=x)$ instead of $P_\mu(\RV{X}\in\{x\})$.
+
+Given random variables $\RV{X},\RV{Y}$ define the product distribution $P_\mu(\RV{X},\RV{Y})$ such that for $B\in\mathcal{X}$, $C\in\mathcal{Y}$ $P_\mu(\RV{X}\in A,\RV{Y}\in B)=\mu(\RV{X}^{-1}(B)\cap \RV{Y}^{-1}(C))$.
+\end{definition}
+
+\begin{definition}[Random variable sequences]
+Given a probability space $(\Omega,\mathcal{F},\mu)$ and random variables $\RV{X}:\Omega\to X$ and $\RV{Y}:\Omega\to Y$, define the random varaible $\RV{Z}:=(\RV{X},\RV{Y}):\Omega\to X\times Y$  such that $\RV{Z}:\omega\to (\RV{X}(\omega),\RV{Y}(\omega)$. We say $\RV{Z}$ is a random variable sequence or a random variable set, and $P_Z(\RV{Z})=P_{XY}(\RV{X}\times\RV{Y})$.
+\end{definition}
+
+\begin{definition}[Marginal probability]
+Given random variables $\RV{X}$ and $\RV{Y}$ with joint distribution $P_\mu(\RV{X},\RV{Y})$, the marginal probability $P_\mu(\RV{X})$ is such that for $B\in\mathcal{X}$
+\begin{align*}
+    P_\mu(\RV{X}\in B) = P_\mu(\RV{X}\in B,\RV{Y}\in \mathcal{Y})
+\end{align*}
+
+If we have $\RV{Z}=(\RV{X},\RV{Y})$, we will sometimes use $P_\mu(\RV{X})$ to for the marginal $P_\mu(\RV{X})$.
+\end{definition}
+
+\begin{definition}[Conditional probability]
+Given random variables $\RV{X}$ and $\RV{Y}$ with joint distribution $P_\mu(\RV{X},\RV{Y})$, the conditional probability $P_\mu(\RV{X}|\RV{Y})$ satisfies
+
+\begin{align*}
+    P_\mu(\RV{X},\RV{Y}) = P_\mu(\RV{Y})P_\mu(\RV{X}|\RV{Y})
+\end{align*}
+
+\begin{definition}[Markov kernel]
+Given two measureable sets $(E,\mathcal{E})$ and $(F,\mathcal{F})$, a Markov kernel $K$ is a map $E\times \mathcal{F} \to [0,1]$ where
+\begin{itemize}
+    \item The map $x\mapsto K(B|x)$ is $\mathcal{E}$-measurable for every $B\in\mathcal{F}$
+    \item The map $B\mapsto K(B|x)$ is a probability measure on $(F,\mathcal{F})$ for every $x\in E$ 
+\end{itemize}
+
+We will often write $K:E\to \Delta(\mathcal{F})$, to be read as ``$K$ maps from $E$ to probability measures on $(F,\mathcal{F})$''.
+
+\end{definition}
+
+\begin{definition}[Measure-kernel-function product]\label{def:kernel_products}
+If $K$ is a Markov kernel from $(E,\mathcal{E})$ to $(F,\mathcal{F})$ and $\mu$ is a probability measure on $(E,\mathcal{E})$, then
+\begin{align}
+    \mu K(B)=\int_E \mu(dx) K(B|x),\qquad B\in\mathcal{F}
+\end{align}
+defines a probability measure $\mu K$ on $(F,\mathcal{F})$.
+
+If $f$ is a nonnegative measurable function $F\to \mathbb{R}$ then
+\begin{align}
+    Kf(x) = \int_F K(dy|x)f(y), \qquad x\in E
+\end{align}
+is a nonnegative measureable function $E\to \mathbb{R}$.
+
+If $L$ is a Markov kernel from $(F,\mathcal{F})$ to $(G,\mathcal{G})$, then
+\begin{align}
+    KL(B|x) = \int_F K(dy|x) L(B|y),\qquad x\in E, B\in \mathcal{G}
+\end{align}
+is a Markov kernel from $(E,\mathcal{E})$ to $(G,\mathcal{G})$. \cite{cinlar_probability_2011}
+\end{definition}
+
+\end{definition}
+
+\begin{definition}[Independence]
+Given random variables $\RV{X}$ and $\RV{Y}$ with distribution $P_\mu(\RV{X,Y})$, $\RV{X}$ and $\RV{Y}$ are independent iff $P_\mu(\RV{X,Y})=P_\mu(\RV{X})P_\mu(\RV{Y})$. Write $\RV{X}\CI_{P_\mu}\RV{Y}$.
+
+\end{definition}
+
+\begin{definition}[Conditional independence]
+
+
+Given random variables $\RV{X}$ and $\RV{Y}$ with distribution $P_\mu(\RV{X},\RV{Y},\RV{Z})$, $\RV{X}$ and $\RV{Y}$ are independent conditional on $\RV{Z}$ iff 
+\begin{align*}
+    P_\mu(\RV{X},\RV{Y}|\RV{Z}) = P_\mu(\RV{X}|\RV{Z})P_\mu(\RV{Y}|\RV{Z})  
+\end{align*}
+
+We write $\RV{X}\CI_{P_\mu} \RV{Y} | \RV{Z}$
+\end{definition}
+
+
+\begin{definition}[Set of probability distributions]
+For a measurable set $(X,\mathcal{X})$, we write $\Delta(\mathcal{X})$ for the set of all probability distributions on $\mathcal{X}$.
+\end{definition}
+
+\begin{definition}[Iverson bracket]
+$\llbracket \cdot \rrbracket$ is a function that evaluates to 1 if the condition in the bracket is true and 0 if the condition is false.
+\end{definition}
+
+
+\subsubsection{Causal Graphical Models}
+
+\begin{definition}[Directed Acyclic Graph]
+A Directed Acyclic Graph (DAG) $\mathcal{G}$ is a set of vertices and directed edges $(\mathbf{V},\mathbf{E})$. A directed edge $E$ is an ordered pair of vertices $V_i$ and $V_j$, is represented by $V_i \to V_j$ and identifies $V_i$ as a \emph{parent} of $V_j$ and $V_j$ as a \emph{child} of $V_i$. Write $V_i\in \PA{\mathcal{G}}{V_j}$ and $V_j\in\CH{\mathcal{G}}{V_i}$.
+\end{definition}
+
+\begin{definition}[Paths and Directed Paths]
+A path $p$ in $\mathcal{G}$ consists of a sequence of nodes $\mathbf{V}_p=\{V_i:1\leq i \leq n\}$, $n\in\mathbb{N}$ along with a sequence of edges $\mathbf{E}_p=\{E_i:1\leq i \leq n-1\}$. The edge $E_i$ connects nodes $V_i\to V_{i+1}$ or $V_{i+1}\to V_i$. No edge appears in $\mathbf{E}_p$ more than once and no vertex appears in $\mathbf{V}_p$ more than once.
+
+A directed path is a path from $V_i$ to $V_j$ such that every edge $E_k$ is oriented  $V_k\to V_{k+1}$.
+\end{definition}
+
+\begin{definition}[Descendants and Ancestors]\label{def:descendants_and_ancestors}
+A descendant of $V_i$ in $\mathcal{G}$ is a child of $V_i$ or the child of a descendant of $V_i$. Equivalently, $V_j$ is a descendant of $V_i$ iff there is a directed path from $V_i$ to $V_j$. We write $V_j\in \DE{\mathcal{G}}{V_i}$.
+
+An ancestor of $V_i$ in $\mathcal{G}$ is a parent of $V_i$ or a parent of an ancestor of $V_i$. Equivalently, $V_j$ is an ancestor of $V_i$ iff there is a directed path from $V_j$ to $V_i$. We write $V_j\in \AN{\mathcal{G}}{V_i}$
+\end{definition}
+
+\begin{definition}[Head-to-head node]
+A head to head or collider node $V_{h}$ in a path $p$ is a node where the two adjacent edges $E_i$ and $E_{i+1}$ in $p$ are oriented as $V_{h-1}\rightarrow V_h$ and $V_h\leftarrow V_{h+1}$ respectively.
+\end{definition}
+
+\begin{definition}[V-structure]\label{def:v_structure}
+A graph $\mathcal{G}=(\mathbf{V},\mathbf{E})$ contains a v-structure if there are three nodes $V_1$, $V_2$ and $V_3$ in $\mathbf{V}$ and two edges such that $V_2\to V_1$ and $V_3\to V_1$ and the edges $V_2\to V_3$ or $V_3\to V_2$ are not in $\mathbf{E}$.
+
+\end{definition}
+
+\begin{definition}[Blocked path]
+A path $p$ is blocked by a set $\mathbf{S}\subset \mathbf{V}$ iff $p$ contains a node that is not a head-to-head node that is also in $\mathbf{S}$, or if $p$ contains a head-to-head node which is not in $\mathbf{S}$ and has no a descendent in $\mathbf{S}$.
+\end{definition}
+
+\begin{definition}[d-separation]\label{def:dsep}
+Two sets of nodes $\mathbf{A},\mathbf{B}\subset \mathbf{V}$ are d-separated in $\mathcal{G}$ by $\mathbf{S}\subset \mathbf{V}$ iff every path starting with a node in $\mathbf{A}$ and ending with a node in $\mathbf{B}$ is blocked by $\mathbf{S}$. We write this relation $\mathbf{A} \perp_{\mathcal{G}} \mathbf{B} | \mathbf{S}$.
+\end{definition}
+
+
+For the following definitions, suppose we have a probability space $(\Omega,\mathcal{F},\mu)$ and a sequence of random variables $\RV{V}=\{\RV{V}_i|i\in N\}$ for some $N\in\mathbb{N}$. Suppose we also have a graph $\mathcal{G}=(\mathbf{V},\mathbf{E})$ where $\mathbf{V}=\{V_i|i\in N\}$.
+
+\begin{definition}[Compatibility]\label{def:compatibility}
+The probability distribution $P_\mu(\RV{V})$ is compatible with $\mathcal{G}$ iff $V_i\perp_{\mathcal{G}} V_j |V_k \Rightarrow \RV{V}_i\CI_{P_\mu} \RV{V}_j | \RV{V}_k$ for all $i,j,k \in N$.
+
+Another term for compatibility is \emph{Markovian}
+\end{definition}
+
+\begin{definition}[Transparency]
+The probability distribution $P_\mu(\RV{V})$ is transparent with respect to $\mathcal{G}$ iff $\RV{V}_i\CI_{P_\mu} \RV{V}_j | \RV{V}_k \Rightarrow V_i\perp_{\mathcal{G}} V_j |V_k$ for all $A,B,S\subset V$.
+\end{definition}
+
+\begin{definition}[Faithfulness]\label{def:faithfulness}
+The probability distribution $P_\mu(\RV{V})$ is faithful to $\mathcal{G}$ iff it is both compatible and transparent.
+\end{definition}
+
+\begin{remark}
+Compatibility and faithfulness are both standard definitions, transparency is not. I chose transparency for the connotation that ``the probability distribution doesn't mislead you with spurious independences''.
+\end{remark}
+
+
+\include{decision_theory}
+
+\include{causality_approaches}
+
+\include{key_problems_causal_inference}
+
+\include{key_questions}
+
+
+\bibliographystyle{plain}
+\bibliography{references.bib}
+
+
+\end{document}
