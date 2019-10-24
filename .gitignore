@@ -1,0 +1,13 @@
+# LaTeX
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.nfs*
+*.sublime-project
+*.sublime-workspace
+*.pdf

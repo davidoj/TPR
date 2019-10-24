@@ -1,0 +1,49 @@
+%!TEX root = main.tex
+
+\section{Introduction}
+
+This thesis aims to clarify the foundations of statistical causal inference. Existing approaches to causality are profoundly idiosyncratic. $P(\RV{Y}|do(\RV{X}=x))$ is an expression that will only appear the Causal Bayesian Network literature and the thing that it expresses, of fundamental importance within the CBN framework, has no obvious counterpart outside of this framework. Treatment effects, the endpoint of potential outcomes analysis, are distribution properties defined only in probability spaces that support ``counterfactual random variables'', a concept unique to the counterfactual approach to causality. This idiosyncracy stands in contrast to, for example, statistical learning theory which takes as its basic components probability measures, which are themselves grounded in measure theory, losses, which are borrowed from decision theory, and sets of functions, which are considered extensively in computational complexity theory.
+
+A key aim of this work is to develop an approach to posing and answering problems in the realm of causal inference based on tools from existing fields of study. Substantial progress has been made on this front: I have formally defined \emph{causal statistical decision theory} (CSDT) which draws its key concepts from statistical decision theory and probability theory. \emph{Causal theories}, the core objects of study, can be expressed formally as Markov kernels and are closely related to \emph{statistical experiments}. A key aim now is to demonstrate that CSDT is useful, if in fact it is. Three broad goals support this:
+
+\begin{enumerate}
+	\item Develop a clear exposition of CSDT and provide a useful set of ``mathematical tools'' for working with it
+	\begin{enumerate}
+		\item String diagrams appear to be a representation of causal theories; extend these where necessary to meet needs of CSDT
+		\item Define analogues of independence and disintegration for general Markov kernels
+		\item Find sufficient conditions for existence of particular types of Markov kernels beyond discrete spaces
+	\end{enumerate}
+	\item Demonstrate that CSDT can handle existing problems of causal inference
+	\begin{enumerate}
+		\item How are \emph{causal Bayesian networks} and their derivatives related to CSDT?
+		\item How are \emph{potential outcomes models} and their derivatives related to CSDT?
+		\item How is \emph{Granger causality} related to CSDT?	
+		\item What is the analogue of \emph{causal identifiability} for causal decision problems?
+		\item How is \emph{observational causal inference} (in its various forms) posed with CSDT?
+		\item Can CSDT handle questions of \emph{responsibility} or \emph{inverse causal problems}?
+	\end{enumerate}
+	\item Demonstrate that CSDT can pose and answer new types of problems
+	\begin{enumerate}
+		\item How can we measure the \emph{difficulty} of a causal inference problem?
+		\item What is the analogue of \emph{learnability} for causal inference problems?
+		\item What is the role of \emph{regularisation} in causal inference?
+		\item What is the analogue of \emph{dominance} for causal theories?
+		\item What types of \emph{causal assumptions} must be made of causal theories to avoid trivial results?
+		\item What is the role of \emph{reusability} in causal inference?
+	\end{enumerate}
+\end{enumerate}
+
+1a is an ongoing project. A paper was submitted to and rejected from NeurIPS introducing CSDT, and a substantially revised paper with the same purpose is currently under review for the AIStats conference. Conferences are currently being targeted as there are many aspects of the theory under development, and we are looking to target journals sometime later in the life cycle. Future targeted conferneces include ICML (July 12-17, 2020) and COLT (unannounced, 2020). 1b has been partly addressed in various places but there are outstanding questions about the generality of the definitions that have been adopted. It is known that moving beyond discrete spaces (1c) presents issues in some cases, and a suitably general sufficient condition to avoid these difficulties would be useful.
+
+2a and 2b are understood at a high level, but there are additional questions of substantial interest. For example, what is the relationship between string diagram representations of causal theories and the graphs of causal Bayesian networks. It might also be of interest to reproduce in detail the solution of a causal problem under either system with CSDT. 2c has not been investigated but is considered worthwhile. Some progress has been made on 2d, but it is far from answered. Preliminary work on 2e suggests that there may be some interesting extensions to existing approaches suggested by CSDT. It is not clear how to pose inverse causal problems (``given the consequences, what was the cause?'') mentioned in 2f using CSDT. Understanding this is not a high priority, but if additional definitions are needed to pose such problems in CSDT it would be interesting to know what they are.
+
+3a, b  and c are examples of problems that deal with very important notions and are relatively well understood in ordinary statistics but have, to my knowledge, not even been posed in relation to causal problems. Understanding how these concepts fit into ordinary statistical decision theory is likely to be a productive step towards understanding how they fit into CSDT. Dominance (3d) is a notion closely associated with ordinary statistical decision theory, and fits neatly into CSDT with interesting extensions. It is widely accepted that causal assumptions (3e) are a necessary element of causal problem solving - whatever form those assumptions actually take. With CSDT we can ask what form these assumptions must take in general in the form of triviality theorems - one such theorem termed ``no causes in, no causes out'' has been proved. Reusability (3f) is related to dominance (3d) and is a frequently discussed property of causal models.
+
+The immediate focus (a 1-2 month time frame) is on 2e, 3d and 3f, which are all related. The desired outcomes of work on these questions are:
+\begin{itemize}
+	\item Examples of problems handled with CSDT that are accessible to people already in the causal inference field
+	\item At least one novel extension to existing methods of observational causal inference
+	\item Mathematical tools for the comparison of causal theories analogous to Blackwell and Le Cam's analysis of dominance and deficiency \cite{le_cam_comparison_1996}
+\end{itemize}
+
+On a longer time frame (6-12 months), I am looking to make substantial progress on 1a and 3a,b and c. Progress on these questions may well involve progress on many of the other key questions identified here.
