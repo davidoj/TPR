@@ -50,7 +50,9 @@
 \usepackage{wasysym}
 \usepackage[]{todonotes}
 
-
+ 
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
 
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}[section]
@@ -76,6 +78,13 @@
 \newcommand{\CH}[2]{\ensuremath{\text{Ch}_{#1}(#2)}}
 \newcommand{\DE}[2]{\ensuremath{\text{De}_{#1}(#2)}}
 \newcommand{\ID}[1]{\ensuremath{\text{Id}_{#1}}}
+
+\newcommand{\NC}[2]{\ensuremath{{#1}\not\to{#2}}}
+\newcommand{\GS}[1]{\ensuremath{\underline{\mathscr{#1}}}}
+\newcommand{\AN}[2]{\ensuremath{\text{An}_{\mathcal{#1}}(#2)}}
+\newcommand{\Insert}{\ensuremath{\text{insert}}}
+\newcommand{\U}[1]{\ensuremath{\underline{#1}}}
+\newcommand{\XGA}[4]{\ensuremath{\RV{#2}^{\mathcal{#1}_{\overline{#3}}}_{#4}}}
 
 \makeatletter
 \newcommand*\bigcdot{\mathpalette\bigcdot@{.5}}
@@ -128,8 +137,9 @@
 
 \maketitle
 
+\tableofcontents
 
-\include{tpr_main}
+\input{tpr_main}
 
 
 
@@ -138,7 +148,12 @@
 
 \appendix
 \newpage
-\section*{Appendix:}
+\section{Appendix:}
 
+\input{old_main}
+\input{decision_theory}
+\input{causality_approaches}
+\input{key_problems}
+\input{key_questions}
 
 \end{document}

@@ -6,7 +6,7 @@ In section \ref{ssec:CDT}, the conditional map $P_\mu(\RV{X},\RV{D})$ and the de
 
 \subsubsection{Other fields dealing with consequences}
 
-\subsubsubsection{Control Engineering}
+\paragraph{Control Engineering}
 
 Control engineering in its simplest form treats consequences as an element of prior knowledge about a system's operation. A discrete linear time invariant control system is governed by two state equations \cite{ogata_discrete-time_1995,nise_control_2010}:
 
@@ -40,7 +40,7 @@ Causal decision theory considers the ``instantaneous consequences'' of a particu
 
 The system discussed here is simplified in a number of ways - we have assumed that the dynamics are linear, the matrices $A,B,C,D$ are fixed and known precisely, and that there is no noise in the measurement of $\mathbf{x}_t$ or $\mathbf{y}_t$ or in the input $\mathbf{u}_t$. In addition, control systems are typically considered to have continuous rather than discrete dynamics. Control theory is a deep and broad field, and work exists relaxing all of the listed assumptions \cite{stengel_stochastic_1986,kokotovic_foundations_1991}. 
 
-\subsubsubsection{Reinforcement Learning}
+\paragraph{Reinforcement Learning}
 
 Reinforcement learning deals with sequential decision problems with a focus on situations where state dynamics are stochastic and unknown. There are many connections between reinforcement learning and control engineering.
 
@@ -113,7 +113,7 @@ Cartwright has offered the opinion that the graphical model approach isn't wholl
 
 Further criticism of the structural approach points out that two sets of variables are rarely ``truly'' independent, either unconditionally or conditional on some third set of variables. Furthermore, not every set of variables admits an acyclic set of causal relationships \cite{gelman_causality_2011}.
 
-\subsubsubsection{Causal Bayesian Network}
+\paragraph{Causal Bayesian Network}
 
 There are many variants of graphical causal models, and Causal Bayesian networks (CBNs) are one of the more basic types.
 
@@ -178,7 +178,7 @@ We identify the set of decisions $D$ with $A$, and we seek the consequence kerne
 
 Suppose that the objective is to maximise $\mathbb{E}_{\kappa(\RV{A},\RV{R}|a)}[\RV{R}]$. Then this can be achieved by choosing $a^*$ such that $a^*\in \argmax_{a\in A} P_\mu(\RV{R}|\RV{A})$. This agrees with the standard recommendation for multi-armed bandits\cite{barto_reinforcement_1998}.
 
-\subsubsubsection{Variants of Graphical Models}
+\paragraph{Variants of Graphical Models}
 
 Structural equation models are closely related to causal Bayesian networks. Given some $N\subset \mathbb{N}$, a \emph{structural equation model} or \emph{structural causal model} on a set of variables $V=\{V_i|i\in N\}$ is a collection of equations $M$ of the form:
 \begin{align}
@@ -247,7 +247,7 @@ That is, $\RV{Y}$ and $\RV{Y}^{A=x}$ agree conditional on $A=x$.
 
 A partial translation between potential outcomes and graphical models is possible by assuming that a given potential outcome $\RV{X}^{A=a}$ corresponds to a graph $\mathcal{G}$ such that $P_\mu(\RV{X}^{A=a})=P_{\mathcal{G}}(\RV{X}|do(A=a))$. A full translation requires substantial effort in constructing a graph capable of representing queries posed in the potential outcomes notation\cite{shpitser_complete_2008}.
 
-\subsubsubsection{Treatment Effects}\label{sec:treatment_effect}
+\paragraph{Treatment Effects}\label{sec:treatment_effect}
 
 Given potential outcomes $\RV{Y}^{A=1}$ and $\RV{Y}^{A=0}$, the treatment effect (relative to these potential outcomes) is defined as 
 \begin{align}
@@ -304,7 +304,7 @@ The effect of treatment on the treated is identifiable only under restricted con
 
 The loss proposed here is quite a natural one. Recall that the loss $l_I$ didn't always capture the ``cost of treatment''. In such cases, the loss $l_E$ would appear to do so.
 
-\subsubsubsection{Example: Stateless Markov Decision Process (Potential Outcomes)}\label{sec:smdp_po}
+\paragraph{Example: Stateless Markov Decision Process (Potential Outcomes)}\label{sec:smdp_po}
 
 As before, consider an MDP $\langle \{1\},A,R,\mathcal{T}\rangle$, where the state is the singleton $\{1\}$. In this case we can write $\mathcal{T}:A\to \Delta(R)$. Suppose also that the policy $\pi:\{1\}\to \Delta(A)$ is constant (this is simplifying but not strictly necessary). These assumptions imply that the sequence $\{(\RV{A}_i,\RV{R}_i)|i\in \mathbb{N}\}$ are IID. Write $P_\mu(\RV{A}_i,\RV{R}_i):=P_\mu(\RV{A},\RV{R})$ for all $i\in \mathbb{N}$.
 

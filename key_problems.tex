@@ -12,7 +12,7 @@ An alternative approach is to rely on expert knowledge for causal structures. Th
 
 Finally, there is the \emph{causal discovery} approach, which aims to develop principles for determining the correct causal structure from data. These generally take the form of rules by which some structural hypotheses are considered unlikely or dispreferred to other hypotheses. This stands in contrast to the condition of compatibility (definition \ref{def:compatibility}) which is a hard requirement - a causal Bayesian network by definition \ref{def:CBN} must be compatible with the set $\mathbf{P}_*$ of interventional distributions.
 
-\subsubsubsection{Faithfulness and conditional independence based approaches}
+\paragraph{Faithfulness and conditional independence based approaches}
 
 The most studied variant of causal discovery employs the assumptions of faithfulness (definition \ref{def:faithfulness}) and full observability. Compatibility asserts that d-separations in a graph $\mathcal{G}$ imply conditional independences in an associated probability distribution, while faithfulness holds that the reverse implication also holds. Full observability holds that the set of observed variables corresponds one-to-one to the set of vertices in the causal Bayesian network $\mathcal{G}$. Together these assumptions allow inference to proceed from conditional independences in a probability distribution to edges in a graph.
 
@@ -26,7 +26,7 @@ A related family of methods of determining network structures are Bayesian or sc
 
 Full observability is unlikely to be a realistic assumption in many cases. Latent variable models that are distinguishable on the basis of an extended assumption of faithfulness have been characterised\cite{shpitser_identification_2006,evans_margins_2015}, and a number of algorithms for causal discovery have been proposed for finding latent variable models faithful to an observed probability distribution\cite{claassen_learning_2013,colombo_learning_2012,spirtes_causation_1993}.
 
-\subsubsubsection{Algorithmic independence of conditionals}
+\paragraph{Algorithmic independence of conditionals}
 
 A more recent approach to causal discovery employs the principle of \emph{algorithmic independence of conditionals}. Recall that faithfulness was justified on the basis that unfaithful distributions implied ``unlikely'' alignments between causal mechanisms. The independence of conditionals (IC) approach aims to formalise the idea that causal mechanisms are independent using Kolmogorov complexity. Given a Markov kernel $\kappa:\PA{X}{}\to \Delta(X)$, the Kolmogorov complexity $K^T(\kappa)$ relative to turing machine $T$ is (roughly speaking) the length of the shortest program on $T$ that computes $\kappa(\RV{X}|\PA{}{X})$\cite{kolmogorov_three_1968,lemeire_replacing_2013}. Two causal mechanisms $\kappa_1:\PA{}{V_1}\to V_1$ and $\kappa_2:\PA{}{V_2}$ are algorithmically independent if $K^T(\kappa_1\times\kappa_2)=K^T(\kappa_1)+K^T(\kappa_2)$. The formalisation is aspirational, and practical applications of the IC approach typically employ the general principle that causal mechanisms should not contain information about one another rather than attempting to approximate the Kolmogorov complexity of the mechanisms directly\cite{lemeire_replacing_2013}. 
 
@@ -36,7 +36,7 @@ Bivariate causal inference methods can be used to provide structure scores, whic
 
 The theory of Kolmogorov complexity that motivates the IC approach is closely related to the MDL decision rule discussed in section \ref{sec:ML_problems}. In fact, the MDL decision principle has been used to distinguish causal structures in the bivariate case\cite{budhathoki_causal_2016}.
 
-\subsubsubsection{Assessing the performance of fully observable causal discovery}
+\paragraph{Assessing the performance of fully observable causal discovery}
 
 Assessing the performance of causal discovery methods is difficult, as they are very often tested on synthetic data or on real data that is generated from a system defined by a well-understood composition of mechanisms\cite{spirtes_causation_1993,ramsey_adjacency-faithfulness_2012,peters_structural_2013,chickering_learning_2002}. Results are usually reported in terms of the Hamming distance, and the implications of this for the loss in a causal decision problem are unclear. An alternative score that has been proposed is the structural intervention distance (SID) that counts the number of mis-identified interventional distributions\cite{peters_structural_2013}.
 
@@ -46,7 +46,7 @@ There are few experimental evaluations of the use of causal discovery to improve
 
 For causal decision problems, causal structure learning is a secondary task. Ultimately a consequence kernel is sought which is, by whatever means we have to judge it, ``correct''. This is much more closely related to the problem of estimating causal effects.
 
-\subsubsubsection{Experiments and Quasi-experiments}
+\paragraph{Experiments and Quasi-experiments}
 
 Causal theories are closely connected with the practices of conducting \emph{randomised experiments}. An early example of the notation now associated with potential outcomes can be found in work by Neyman discussing the design of randomised agricultural experiments\cite{splawa-neyman_application_1990}. As has been noted earlier, idealised randomised experiments are one way in which it has been proposed that interventional distributions may be observed\cite{pearl_causality:_2009}. An idealised experiment is simple to describe in either framework. Given a set of treatments $A=\{0,1\}$ and a set of outcomes $X=\{0,1\}$, suppose that the treatments are ``set randomly'' and that $X$ is an effect of $A$. In the case of graphical models, this means we assume the causal Bayesian network $\mathcal{G}$ (figure \ref{fig:rand_expt}).
 
@@ -113,7 +113,7 @@ In the potential outcomes framework, we may assume ignorability for $Z$ on $A$ a
 
 We cannot in general estimate the ATE of $A$ on $X$, but we can estimate the ATE of $Z$ on $A$ and $Z$ on $X$. The latter is known as the ``intention to treat'' estimate (see section \ref{sec:treatment_effect}). Conditions have been derived under which the effect of $A$ on $X$ may be identified for particular sub-populations such as the ``effect of treatment on the treated) (again, see section \ref{sec:treatment_effect})\cite{angrist_identification_1996,pearl_causality:_2009}. Alternatively, it is possible to establish bounds on the ATE of $A$ on $X$\cite{balke_bounds_1997}. The formulations given here are also very similar to the formulations of quasi-experiments or instrumental variables methods\cite{angrist_instrumental_2001}. In this case, the variable $Z$ does not represent a deliberately randomised treatment assignment, but it does represent some source of variation that is assumed, as in \ref{fig:rand_expt_imp}, not to share any common causes with the outcome $X$\cite{angrist_mastering_2014}. Despite their similarity as causal inference problems, imperfect experiments and quasi-experiments may differ substantially as decision problems. We have already considered different losses that may be relevant in imperfect or quasi-experiments (again, section \ref{sec:treatment_effect}). It may also be the case that the treatment assignment indicator $Z$ is or is not a reasonable approximation of the actions under consideration \cite{heckman_randomization_1991}; the latter case demands another layer of analysis to connect the actual actions in question with the estimated causal effects.
 
-\subsubsubsection{Causal Inference from Observational Data}
+\paragraph{Causal Inference from Observational Data}
 
 Causal inference in experimental and quasi-experimental contexts is a special case of causal inference from observational data where there is good reason to believe certain sructural or ignorability assumptions hold. The opposite end of this spectrum is the problem of causal inference from observational data where there is \emph{not} good reason to believe certain structural or ignorability assumptions hold. In the structural case, this problem would appear to call for causal discovery as an initial step (a technique which, as noted above, has been employed with some success). There is an inference methodology known as \emph{observational causal inference} that attempts to generate causal estimates in the no-good-reason-to-believe-assumptions regime (henceforth ``NGR'') without structural discovery.
 

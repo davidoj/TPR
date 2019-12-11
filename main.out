@@ -1,1 +1,19 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{appendix.A}{Appendix:}{}% 2
+\BOOKMARK [2][-]{subsection.A.1}{Old Introduction}{appendix.A}% 3
+\BOOKMARK [2][-]{subsection.A.2}{Definitions and Notation}{appendix.A}% 4
+\BOOKMARK [3][-]{subsubsection.A.2.1}{Probability distributions and random variables}{subsection.A.2}% 5
+\BOOKMARK [2][-]{subsection.A.3}{Decision Theory}{appendix.A}% 6
+\BOOKMARK [3][-]{subsubsection.A.3.1}{Statistical Decision Theory}{subsection.A.3}% 7
+\BOOKMARK [3][-]{subsubsection.A.3.2}{Machine Learning Problems}{subsection.A.3}% 8
+\BOOKMARK [3][-]{subsubsection.A.3.3}{Causal Decision Theory}{subsection.A.3}% 9
+\BOOKMARK [2][-]{subsection.A.4}{Approaches to Causality}{appendix.A}% 10
+\BOOKMARK [3][-]{subsubsection.A.4.1}{Other fields dealing with consequences}{subsection.A.4}% 11
+\BOOKMARK [3][-]{subsubsection.A.4.2}{Causal Graphical Models}{subsection.A.4}% 12
+\BOOKMARK [3][-]{subsubsection.A.4.3}{Example: Stateless Markov Decision Process \(graphical models\)}{subsection.A.4}% 13
+\BOOKMARK [3][-]{subsubsection.A.4.4}{Potential Outcomes}{subsection.A.4}% 14
+\BOOKMARK [3][-]{subsubsection.A.4.5}{Comparing graphical models and potential outcomes}{subsection.A.4}% 15
+\BOOKMARK [2][-]{subsection.A.5}{Key Problems in Causal Inference}{appendix.A}% 16
+\BOOKMARK [3][-]{subsubsection.A.5.1}{Causal Discovery}{subsection.A.5}% 17
+\BOOKMARK [3][-]{subsubsection.A.5.2}{Estimation of Causal Effects}{subsection.A.5}% 18
+\BOOKMARK [2][-]{subsection.A.6}{Key Questions}{appendix.A}% 19
